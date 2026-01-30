@@ -8,6 +8,7 @@ const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
 let server;
+let manualUpdateCheck = false;
 
 async function startNextServer() {
   // In production we run the Next.js app *inside* Electron (no separate process).
@@ -48,10 +49,16 @@ function createMenu() {
           label: 'Check for updates…',
           click: async () => {
             try {
+              manualUpdateCheck = true;
               autoUpdater.autoDownload = false;
               await autoUpdater.checkForUpdates();
             } catch (e) {
               dialog.showErrorBox('Update check failed', e?.message || String(e));
+            } finally {
+              // reset after the cycle
+              setTimeout(() => {
+                manualUpdateCheck = false;
+              }, 5000);
             }
           },
         },
@@ -110,9 +117,13 @@ function wireAutoUpdater() {
   });
 
   autoUpdater.on('update-not-available', async (info) => {
-    // Only show a dialog when user explicitly checks.
-    // electron-updater triggers this for both startup and manual checks.
-    // We'll keep it quiet on startup by using checkForUpdatesAndNotify only when packaged.
+    if (!manualUpdateCheck) return;
+    await dialog.showMessageBox({
+      type: 'info',
+      buttons: ['OK'],
+      title: 'No updates',
+      message: `You are up to date (v${info.version}).`,
+    });
   });
 
   autoUpdater.on('update-downloaded', async (info) => {

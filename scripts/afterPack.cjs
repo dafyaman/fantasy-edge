@@ -25,8 +25,8 @@ exports.default = async function afterPack(context) {
     return;
   }
 
-  // If we only got projectDir, prefer the staged app/ directory.
-  const candidateAppDir = fs.existsSync(path.join(appDir, 'package.json')) ? appDir : path.join(appDir, 'app');
+  // If we only got projectDir, prefer the staged electron-app/ directory.
+  const candidateAppDir = fs.existsSync(path.join(appDir, 'package.json')) ? appDir : path.join(appDir, 'electron-app');
   const sourcePkg = path.join(candidateAppDir, 'package.json');
   const destPkg = path.join(tmpDir, 'package.json');
 

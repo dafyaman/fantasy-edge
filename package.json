@@ -1,6 +1,6 @@
 {
   "name": "fantasy-edge-app",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "private": false,
   "main": "electron/main.cjs",
   "repository": {
@@ -52,7 +52,7 @@
       }
     ],
     "directories": {
-      "app": "app",
+      "app": "electron-app",
       "output": "dist"
     },
     "files": [

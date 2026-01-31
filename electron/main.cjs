@@ -72,7 +72,14 @@ function createMenu() {
       label: 'View',
       submenu: [
         { role: 'reload' },
-        { role: 'toggledevtools', visible: isDev },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: 'Ctrl+Shift+I',
+          click: () => {
+            const w = BrowserWindow.getFocusedWindow() || mainWindow;
+            if (w) w.webContents.toggleDevTools();
+          },
+        },
         { type: 'separator' },
         { role: 'resetzoom' },
         { role: 'zoomin' },
@@ -159,7 +166,25 @@ async function createWindow() {
     ? process.env.NEXT_DEV_URL || 'http://localhost:3000'
     : await startNextServer();
 
+  // Better diagnostics for "white screen" scenarios
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
+    console.error('did-fail-load', { errorCode, errorDesc, validatedURL });
+  });
+  mainWindow.webContents.on('render-process-gone', (_event, details) => {
+    console.error('render-process-gone', details);
+  });
+  mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+    console.log('[renderer]', { level, message, line, sourceId });
+  });
+
   await mainWindow.loadURL(startUrl);
+
+  // Force DevTools available in production while we’re stabilizing packaged builds.
+  try {
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  } catch {
+    // ignore
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null;

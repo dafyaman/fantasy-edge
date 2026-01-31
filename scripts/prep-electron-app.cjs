@@ -3,7 +3,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const projectRoot = path.resolve(__dirname, '..');
-const outDir = path.join(projectRoot, 'app');
+const outDir = path.join(projectRoot, 'electron-app');
 
 function rmrf(p) {
   fs.rmSync(p, { recursive: true, force: true });
@@ -27,7 +27,7 @@ function writeJson(p, obj) {
   fs.writeFileSync(p, JSON.stringify(obj, null, 2) + '\n');
 }
 
-console.log('[prep-electron-app] staging app/ ...');
+console.log('[prep-electron-app] staging electron-app/ ...');
 
 // Don’t nuke app/ every run — deleting huge node_modules trees is slow and can look like a hang.
 // Instead, ensure the folder exists and let robocopy mirror/update.
@@ -75,17 +75,17 @@ function robocopyMirror(src, dest) {
 }
 
 // Copy node_modules so the packaged app can run without reinstalling.
-console.log('[prep-electron-app] copying node_modules -> app/node_modules (may take a minute)');
+console.log('[prep-electron-app] copying node_modules -> electron-app/node_modules (may take a minute)');
 robocopyMirror(path.join(projectRoot, 'node_modules'), path.join(outDir, 'node_modules'));
 
-// Copy Next build output *into app.asar* (under app/next/...) so module resolution works.
-console.log('[prep-electron-app] copying .next -> app/next/.next');
+// Copy Next build output into electron-app/next/... (goes inside app.asar)
+console.log('[prep-electron-app] copying .next -> electron-app/next/.next');
 robocopyMirror(path.join(projectRoot, '.next'), path.join(outDir, 'next', '.next'));
 
-console.log('[prep-electron-app] copying public -> app/next/public');
+console.log('[prep-electron-app] copying public -> electron-app/next/public');
 robocopyMirror(path.join(projectRoot, 'public'), path.join(outDir, 'next', 'public'));
 
-// Copy next config into app/next so Next can load config from that dir.
+// Copy next config into electron-app/next so Next can load config from that dir.
 const nextConfig = path.join(projectRoot, 'next.config.ts');
 if (fs.existsSync(nextConfig)) {
   copyFile(nextConfig, path.join(outDir, 'next', 'next.config.ts'));

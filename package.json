@@ -1,8 +1,12 @@
 {
   "name": "fantasy-edge-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "main": "electron/main.cjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dafyaman/fantasy-edge.git"
+  },
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
@@ -40,6 +44,13 @@
     "appId": "com.fantasyedge.app",
     "productName": "Fantasy Edge",
     "asar": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dafyaman",
+        "repo": "fantasy-edge"
+      }
+    ],
     "directories": {
       "app": "app",
       "output": "dist"

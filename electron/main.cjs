@@ -12,7 +12,6 @@ let manualUpdateCheck = false;
 
 async function startNextServer() {
   // In production we run the Next.js app *inside* Electron (no separate process).
-  // We keep the built Next output in an extraResources folder so it is readable outside app.asar.
   const next = require('next');
   const getPort = (await import('get-port')).default;
 
@@ -23,6 +22,12 @@ async function startNextServer() {
     // In production, keep Next build output inside app.asar so Node module resolution
     // can find react/react-dom from the packaged node_modules.
     : path.join(__dirname, '..', 'next');
+
+  // Hard guard: if this path is wrong, we end up with a blank screen (loadURL never happens).
+  const fs = require('fs');
+  if (!fs.existsSync(nextDir)) {
+    throw new Error(`Next directory not found: ${nextDir}`);
+  }
 
   const nextApp = next({ dev: false, dir: nextDir, hostname: '127.0.0.1', port });
   const handle = nextApp.getRequestHandler();
@@ -162,10 +167,6 @@ async function createWindow() {
     },
   });
 
-  const startUrl = isDev
-    ? process.env.NEXT_DEV_URL || 'http://localhost:3000'
-    : await startNextServer();
-
   // Better diagnostics for "white screen" scenarios
   mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
     console.error('did-fail-load', { errorCode, errorDesc, validatedURL });
@@ -176,6 +177,20 @@ async function createWindow() {
   mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
     console.log('[renderer]', { level, message, line, sourceId });
   });
+
+  let startUrl;
+  try {
+    startUrl = isDev
+      ? process.env.NEXT_DEV_URL || 'http://localhost:3000'
+      : await startNextServer();
+  } catch (e) {
+    const msg = e?.stack || e?.message || String(e);
+    console.error('Failed to start Next server:', msg);
+    dialog.showErrorBox('Failed to start app', msg);
+    startUrl = `data:text/html,${encodeURIComponent(
+      `<h2>Failed to start app</h2><pre style=\"white-space:pre-wrap\">${msg}</pre>`
+    )}`;
+  }
 
   await mainWindow.loadURL(startUrl);
 

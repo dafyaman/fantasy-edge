@@ -1,6 +1,6 @@
 {
   "name": "fantasy-edge-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "main": "electron/main.cjs",
   "repository": {
@@ -62,24 +62,7 @@
       "main": "electron/main.cjs"
     },
     "afterPack": "scripts/afterPack.cjs",
-    "extraResources": [
-      {
-        "from": ".next",
-        "to": "next/.next"
-      },
-      {
-        "from": "public",
-        "to": "next/public"
-      },
-      {
-        "from": "package.json",
-        "to": "next/package.json"
-      },
-      {
-        "from": "next.config.ts",
-        "to": "next/next.config.ts"
-      }
-    ],
+    "extraResources": [],
     "win": {
       "target": [
         {

@@ -49,38 +49,46 @@ const appPkg = {
 
 writeJson(path.join(outDir, 'package.json'), appPkg);
 
-// Copy node_modules so the packaged app can run without reinstalling.
-// This is heavier than ideal, but reliable for now.
-const srcNodeModules = path.join(projectRoot, 'node_modules');
-const dstNodeModules = path.join(outDir, 'node_modules');
-
-if (!fs.existsSync(srcNodeModules)) {
-  throw new Error('node_modules not found. Run `npm install` first.');
+function robocopyMirror(src, dest) {
+  if (!fs.existsSync(src)) {
+    throw new Error(`Missing path: ${src}`);
+  }
+  const args = [
+    src,
+    dest,
+    '/MIR',
+    '/MT:8',
+    '/R:1',
+    '/W:1',
+    '/NFL',
+    '/NDL',
+    '/NJH',
+    '/NJS',
+    '/NP',
+  ];
+  const res = spawnSync('robocopy', args, { stdio: 'inherit', windowsHide: true });
+  const code = res.status ?? 16;
+  if (code > 7) {
+    console.error(`[prep-electron-app] robocopy failed (${code}) copying ${src} -> ${dest}`);
+    process.exit(code);
+  }
 }
 
+// Copy node_modules so the packaged app can run without reinstalling.
 console.log('[prep-electron-app] copying node_modules -> app/node_modules (may take a minute)');
-// robocopy exit codes: 0-7 are success.
-const args = [
-  srcNodeModules,
-  dstNodeModules,
-  '/MIR',
-  '/MT:8',
-  '/R:1',
-  '/W:1',
-  '/NFL',
-  '/NDL',
-  '/NJH',
-  '/NJS',
-  '/NP',
-];
+robocopyMirror(path.join(projectRoot, 'node_modules'), path.join(outDir, 'node_modules'));
 
-// robocopy exit codes 0-7 are success (0 = nothing copied)
-// https://learn.microsoft.com/windows-server/administration/windows-commands/robocopy#return-codes
-const res = spawnSync('robocopy', args, { stdio: 'inherit', windowsHide: true });
-const code = res.status ?? 16;
-if (code > 7) {
-  console.error(`[prep-electron-app] robocopy failed with exit code ${code}`);
-  process.exit(code);
+// Copy Next build output *into app.asar* (under app/next/...) so module resolution works.
+console.log('[prep-electron-app] copying .next -> app/next/.next');
+robocopyMirror(path.join(projectRoot, '.next'), path.join(outDir, 'next', '.next'));
+
+console.log('[prep-electron-app] copying public -> app/next/public');
+robocopyMirror(path.join(projectRoot, 'public'), path.join(outDir, 'next', 'public'));
+
+// Copy next config into app/next so Next can load config from that dir.
+const nextConfig = path.join(projectRoot, 'next.config.ts');
+if (fs.existsSync(nextConfig)) {
+  copyFile(nextConfig, path.join(outDir, 'next', 'next.config.ts'));
 }
 
 process.exitCode = 0;

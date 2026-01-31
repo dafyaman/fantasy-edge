@@ -20,7 +20,9 @@ async function startNextServer() {
 
   const nextDir = isDev
     ? path.join(__dirname, '..')
-    : path.join(process.resourcesPath, 'next');
+    // In production, keep Next build output inside app.asar so Node module resolution
+    // can find react/react-dom from the packaged node_modules.
+    : path.join(__dirname, '..', 'next');
 
   const nextApp = next({ dev: false, dir: nextDir, hostname: '127.0.0.1', port });
   const handle = nextApp.getRequestHandler();

@@ -1,0 +1,64 @@
+name: SLM ps-exec-smoke
+
+on:
+  push:
+    paths:
+      - 'slm-tool/**'
+      - 'scripts/**'
+      - '.github/workflows/slm_ps_exec_smoke.yml'
+  pull_request:
+    paths:
+      - 'slm-tool/**'
+      - 'scripts/**'
+      - '.github/workflows/slm_ps_exec_smoke.yml'
+  workflow_dispatch: {}
+
+jobs:
+  ps-exec-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            slm-tool\slm-tool-app\src-tauri\target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('slm-tool/slm-tool-app/src-tauri/Cargo.lock') }}
+
+      - name: Cache portable Blender 4.2.14
+        uses: actions/cache@v4
+        with:
+          path: |
+            tools\blender\4.2.14
+          # Bust cache automatically if the downloader/extractor script changes.
+          key: ${{ runner.os }}-blender-4.2.14-${{ hashFiles('scripts/get_blender_lts_portable.ps1') }}
+
+      - name: Download/extract Blender 4.2.14 (portable)
+        shell: pwsh
+        run: |
+          ./scripts/get_blender_lts_portable.ps1 -Version 4.2.14 -ConfirmDownload
+
+      - name: Build slm-tool-app.exe (debug)
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          Push-Location slm-tool/slm-tool-app/src-tauri
+          try {
+            cargo build
+          } finally {
+            Pop-Location
+          }
+
+      - name: Run ps-exec-smoke integration check
+        shell: pwsh
+        run: |
+          ./slm-tool/scripts/check_ps_exec_smoke.ps1

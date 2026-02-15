@@ -13,6 +13,10 @@
     "start": "next start -p 3000",
     "lint": "eslint",
 
+    "slm:preflight": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/check_preflight.ps1",
+    "slm:smoke": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke",
+    "slm:export-smoke": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 export-smoke",
+
     "electron:dev": "set NEXT_DEV_URL=http://localhost:3000&& electron .",
     "electron:build": "npm run build",
     "prep:electron-app": "node scripts/prep-electron-app.cjs",

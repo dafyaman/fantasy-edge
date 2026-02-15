@@ -29,9 +29,10 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Get-ReleaseUrl([string]$version, [string]$platform) {
-  # Using blender.org "download/release" URLs keeps the script simple.
-  # It typically redirects to download.blender.org.
-  return "https://www.blender.org/download/release/Blender4.2/blender-$version-$platform.zip"
+  # NOTE: GitHub Actions runners sometimes end up with an empty/invalid zip when
+  # downloading via blender.org redirect URLs.
+  # Use the canonical CDN URL directly to avoid redirects.
+  return "https://download.blender.org/release/Blender4.2/blender-$version-$platform.zip"
 }
 
 $zipName = "blender-$Version-$Platform.zip"
@@ -56,9 +57,18 @@ $url = Get-ReleaseUrl -version $Version -platform $Platform
 Write-Host "Downloading: $url"
 Write-Host "To: $zipPath"
 
-Invoke-WebRequest -Uri $url -OutFile $zipPath
+Invoke-WebRequest -Uri $url -OutFile $zipPath -UserAgent 'Mozilla/5.0 (OpenClaw SLM-001)'
 
-Write-Host "Downloaded OK ($([Math]::Round(((Get-Item $zipPath).Length / 1MB), 1)) MB)"
+$zipBytes = (Get-Item $zipPath).Length
+Write-Host "Downloaded OK ($([Math]::Round(($zipBytes / 1MB), 1)) MB)"
+
+# Quick sanity check: Blender zips are hundreds of MB. If we got something tiny,
+# it's almost certainly an HTML error page or a failed download.
+if ($zipBytes -lt 50MB) {
+  Write-Host "ERROR: Downloaded zip is unexpectedly small ($zipBytes bytes): $zipPath" -ForegroundColor Red
+  Write-Host "URL was: $url" -ForegroundColor Red
+  exit 4
+}
 
 Write-Host "Extracting to: $DestRoot"
 Expand-Archive -Path $zipPath -DestinationPath $DestRoot

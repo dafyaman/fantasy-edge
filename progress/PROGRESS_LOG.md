@@ -1,5 +1,27 @@
 # SLM-001 — Progress Log
 
+## 2026-02-15 12:13 America/Chicago
+- Pulled the latest CI run list and confirmed `SLM ps-exec-export-smoke` is still failing **before** our downloader fix landed (run timestamp 2026-02-15T17:04Z / 11:04 local).
+  - Proof: `gh run list --limit 5` shows export-smoke failure run id `22039613728`.
+  - Proof: `gh run view 22039613728 --log-failed` shows `Downloaded OK (0 MB)` from a `blender.org/download/...` redirect URL.
+- Updated task tracking to reflect that the next action is to re-run export-smoke after committing the downloader change to `download.blender.org`.
+
+## 2026-02-15 11:56 America/Chicago
+- Diagnosed current GitHub Actions failure for `SLM ps-exec-export-smoke`: the portable Blender download produced an **empty/invalid** zip (`Downloaded OK (0 MB)`) and extraction then failed.
+  - Proof: `gh run view 22039613728 --log-failed` shows `Downloaded OK (0 MB)` then `Downloader failed with exit code 1`.
+- Fixed the downloader script to avoid redirects by using `download.blender.org` directly, and added a sanity check to fail fast if the zip is unexpectedly small.
+  - File: `tools/blender/get_blender_portable.ps1`
+  - Proof (local run):
+    - `pwsh -File tools/blender/get_blender_portable.ps1 -Version 4.2.14 -Force` → `Downloaded OK (366.6 MB)` and `FOUND_BLENDER_EXE=...\blender.exe`
+
+## 2026-02-15 11:40 America/Chicago
+- Ran the export-enabled smoke via the repo-root npm script and confirmed it produces both `model.dae` and `report.json` (portable Blender 4.2.14 LTS).
+  - Command: `npm run -s slm:export-smoke`
+  - Output folder: `slm-tool/_runs/export-smoke-20260215-114005/`
+  - Proof artifacts:
+    - `slm-tool/_runs/export-smoke-20260215-114005/model.dae` (2642 bytes)
+    - `slm-tool/_runs/export-smoke-20260215-114005/report.json`
+
 ## 2026-02-15 10:35 America/Chicago
 - Confirmed the `slm-workflow-only` branch is still **ahead by 3 commits** and captured fresh dry-run push proof (no external push performed).
   - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `BEHIND=0 AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.

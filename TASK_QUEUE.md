@@ -11,7 +11,13 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight pas
 
 - **[DONE]** Added `.gitignore` rules to keep the repo lean by ignoring `slm-tool/slm-tool-app/` build artifacts and large portable Blender extracts/binaries.
 
-NEXT: Push `slm-workflow-only` to GitHub and verify the new `SLM preflight (Blender-free)` workflow passes on the PR (optionally mark it as a required check on `main`).
+- **[DONE]** Pushed `slm-workflow-only` to GitHub (now includes the Blender-free preflight workflow).
+
+NEXT: Push the CI fix commit on `slm-workflow-only` and re-check Actions runs:
+- `SLM ps-exec-export-smoke` was failing because CI couldn’t find `tools/blender/get_blender_portable.ps1`.
+- Fix is committed locally (`b651452`) by allowing that script through `tools/blender/.gitignore`.
+
+BLOCKED (1 input): OK to `git push origin slm-workflow-only` from this worker? (Yes/No)
 
 - **[DONE]** Ran `slm-tool/scripts/check_preflight.ps1` locally (Blender-free) to validate wiring end-to-end.
 

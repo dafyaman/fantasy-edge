@@ -1,5 +1,20 @@
 # SLM-001 — Progress Log
 
+## 2026-02-15 05:09 America/Chicago
+- Investigated why `SLM ps-exec-export-smoke` fails on GitHub Actions and fixed the root cause locally.
+  - Found failing run: `gh run view 22034211307 --log-failed` → `Expected downloader script not found: ...\tools\blender\get_blender_portable.ps1`.
+  - Fix: updated `tools/blender/.gitignore` to allow tracking `get_blender_portable.ps1`, and committed it.
+  - Commit: `b651452` ("Track Blender portable downloader script for CI").
+
+## 2026-02-15 04:53 America/Chicago
+- Tried to verify the GitHub PR/Actions status for the new Blender-free preflight workflow, but I can’t find a public PR for branch `slm-workflow-only` via web search.
+  - Proof: `web_search` for `site:github.com dafyaman fantasy-edge slm-workflow-only pull request` returned no matching PR results.
+  - Unblock needed: paste the PR URL/number (or the Actions run URL) so I can confirm `SLM preflight (Blender-free)` is passing.
+
+## 2026-02-15 04:37 America/Chicago
+- Pushed the updated `slm-workflow-only` branch to GitHub so the Blender-free preflight workflow can be verified on the PR.
+  - Proof: `git push` → `4dd9c9e..a2e0dc7  slm-workflow-only -> slm-workflow-only`
+
 ## 2026-02-15 04:21 America/Chicago
 - Updated tracking docs and prepared the repo to push/verify the new Blender-free CI workflow on GitHub.
   - Files: `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`

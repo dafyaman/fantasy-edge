@@ -1,4 +1,54 @@
-# SLM-001 ΓÇö Progress Log\r\n## 2026-02-15 15:25 America/Chicago
+# SLM-001 — Progress Log
+## 2026-02-15 17:19 America/Chicago
+- Committed the CI fix so GitHub Actions can use the *extracted* portable Blender exe (avoids Windows `side-by-side configuration is incorrect`).
+  - Files: `slm-tool/scripts/check_ps_exec_smoke.ps1`, `slm-tool/scripts/check_ps_exec_export_smoke.ps1`
+  - Also updated tracking docs: `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`
+  - Proof: `git show --name-only --oneline HEAD` (see below).
+- Next: push `slm-workflow-only` to origin, then re-run/verify the two Windows smoke workflows.
+
+## 2026-02-15 16:46 America/Chicago
+- Investigated failing GitHub Actions run `SLM ps-exec-smoke` (**22044060136**) and fixed the CI Blender path selection.
+  - Root cause: CI invoked `tools/blender/4.2.14/blender.exe` (a copied EXE) which fails to start on Windows runners with `side-by-side configuration is incorrect` because the adjacent DLLs aren’t present.
+  - Fix: updated `slm-tool/scripts/check_ps_exec_smoke.ps1` to prefer the *extracted* portable Blender exe under `tools/blender/4.2.14/extracted/.../blender.exe` (and only fall back to the copied exe as a last resort).
+  - Proof (failing log excerpt): `gh run view 22044060136 --log-failed` shows `Program 'blender.exe' failed to run ... side-by-side configuration is incorrect`.
+  - Proof (local diff): `git diff -- slm-tool/scripts/check_ps_exec_smoke.ps1` shows the new extracted-path preference.
+- Next: inspect `SLM ps-exec-export-smoke` run **22044060138** logs and apply the same extracted-path fix there if needed.
+
+## 2026-02-15 17:03 America/Chicago
+- Investigated failing GitHub Actions run `SLM ps-exec-export-smoke` (**22044060138**) and applied the same extracted-Blender preference fix to the export-smoke wrapper.
+  - Root cause: workflow invoked `tools/blender/4.2.14/blender.exe` (copied exe) which fails with `side-by-side configuration is incorrect` on Windows runners.
+  - Fix: updated `slm-tool/scripts/check_ps_exec_export_smoke.ps1` to prefer `tools/blender/4.2.14/extracted/blender-4.2.14-windows-x64/blender.exe` before falling back.
+  - Proof (failing log excerpt): `gh run view 22044060138 --log-failed` shows `Program 'blender.exe' failed to run ... side-by-side configuration is incorrect`.
+  - Proof (local diff): `git diff -- slm-tool/scripts/check_ps_exec_export_smoke.ps1` shows extracted-path preference + comment.
+- Next: commit + push this change to `slm-workflow-only`, then re-run the failing workflows to confirm both smoke workflows pass.
+
+## 2026-02-15 16:30 America/Chicago
+- Pulled the latest GitHub Actions run list for branch `slm-workflow-only` via `gh` to see what still fails/passes.
+  - Proof: `gh run list --repo dafyaman/fantasy-edge --branch slm-workflow-only --limit 5` shows:
+    - `SLM ps-exec-smoke` run **22044060136** → `completed failure`
+    - `SLM ps-exec-export-smoke` run **22044060138** → `completed failure`
+    - `SLM preflight (Blender-free)` has recent `completed success` runs on this branch
+- Next: inspect `--log-failed` for the latest failing run IDs above and apply the smallest CI fix.
+
+## 2026-02-15 16:14 America/Chicago
+- Pushed the CI workflow guard commit to GitHub so Actions runs will pick it up.
+  - Proof: `git push origin slm-workflow-only` → `380f5b1..1a44ecd  slm-workflow-only -> slm-workflow-only`
+- Next: trigger fresh Actions runs on `slm-workflow-only` and confirm the guarded `slm-tool-app` build step is skipped and workflows proceed to Blender smoke steps.
+
+## 2026-02-15 15:41 America/Chicago
+- Verified the workflow-guard fix is now committed locally (branch is ahead by 1) and updated TASK_QUEUE to reflect that the next action is a push + CI re-run.
+  - Proof (commit): `git log -1 --oneline` → `1a44ecd SLM-001: guard slm-tool-app build in CI workflows`
+  - Proof (guard present): `git show HEAD:.github/workflows/slm_ps_exec_export_smoke.yml | findstr /n hashFiles` → includes `if: ${{ hashFiles('slm-tool/slm-tool-app/src-tauri/Cargo.toml') != '' }}`
+- Next: push `slm-workflow-only` (commit `1a44ecd`) to origin, then trigger/verify fresh Actions runs.
+
+## 2026-02-15 15:58 America/Chicago
+- Confirmed GitHub Actions is still running and failing on `origin/slm-workflow-only` headSha `380f5b1` (so it does **not** include local guard commit `1a44ecd` yet).
+  - Proof (run headSha): `gh run view 22042870003 --json headSha,conclusion` → `headSha=380f5b1...`, `conclusion=failure`
+  - Proof (failure cause): `gh run view 22042870003 --log-failed` → `Push-Location slm-tool/slm-tool-app/src-tauri` / `Cannot find path ... src-tauri because it does not exist.`
+  - Proof (local vs remote): `git rev-parse slm-workflow-only` → `1a44ecd...`; `git rev-parse origin/slm-workflow-only` → `380f5b1...`
+- Next: push `1a44ecd` to origin, then re-run the workflows and verify the build step is skipped.
+
+## 2026-02-15 15:25 America/Chicago
 - Found root cause of continued CI failure: the workflow guard changes exist locally but were **not committed**, so GitHub Actions is still running the old YAML that unconditionally does `Push-Location slm-tool/slm-tool-app/src-tauri`.
   - Proof (local git state): `git status -sb` → `M .github/workflows/slm_ps_exec_export_smoke.yml` and `M .github/workflows/slm_ps_exec_smoke.yml`
   - Proof (CI log still failing): `gh run view 22042870003 --log-failed` → `Cannot find path ...\slm-tool\slm-tool-app\src-tauri because it does not exist.`

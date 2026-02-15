@@ -21,15 +21,20 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight gua
 
 - **[DONE]** Guarded the `Build slm-tool-app.exe` step in the **ps-exec-smoke** workflow behind a `hashFiles('.../Cargo.toml')` presence check (prevents failures when `slm-tool-app/src-tauri` sources are absent).
 
-NEXT: **Commit + push** the workflow guard that skips `Build slm-tool-app.exe` when `slm-tool/slm-tool-app/src-tauri/Cargo.toml` is absent, then trigger a fresh Actions run for `slm-workflow-only` and confirm it no longer fails on missing `src-tauri`.
+- **[DONE]** Pushed the committed workflow-guard fix (`1a44ecd`) to `origin/slm-workflow-only`.
+  - Proof: `git push origin slm-workflow-only` → `380f5b1..1a44ecd  slm-workflow-only -> slm-workflow-only`
 
-- Latest check: run **22042870003** completed **failure**; still dies at `Push-Location slm-tool/slm-tool-app/src-tauri` (guard not present in workflow YAML at head).
+NEXT: **Push the CI Blender extracted-path fix commit(s)**, then re-run/verify GitHub Actions on `slm-workflow-only`.
+- `SLM ps-exec-smoke` and `SLM ps-exec-export-smoke` were failing with `side-by-side configuration is incorrect` because CI invoked the *copied* `tools/blender/4.2.14/blender.exe` without adjacent DLLs.
+- Fix is now committed locally: both wrappers prefer the *extracted* portable Blender path under `tools/blender/4.2.14/extracted/.../blender.exe`.
+- After push: confirm both workflows pass on Windows runners.
+- Note: `SLM preflight (Blender-free)` is already passing on this branch.
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
 
-**[DONE]** Pushed the CI-fix commits to `origin/slm-workflow-only`.
+**[PARTIAL]** Pushed the portable Blender downloader fix to `origin/slm-workflow-only` (head=`380f5b1`).
 - Proof: `git push origin slm-workflow-only` → `57d5381..380f5b1  slm-workflow-only -> slm-workflow-only`
-- Next: re-check GitHub Actions runs for `slm-workflow-only` (export-smoke should no longer download an empty/invalid zip).
+- Note: CI is still failing because the **workflow-guard fix** is on local commit `1a44ecd` and has **not** been pushed yet.
 
 - **[DONE]** Ran `slm-tool/scripts/check_preflight.ps1` locally (Blender-free) to validate wiring end-to-end.
 

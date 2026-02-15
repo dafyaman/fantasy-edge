@@ -12,9 +12,12 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $blenderExe = $env:BLENDER_EXE
 
 if ([string]::IsNullOrWhiteSpace($blenderExe)) {
+  # Prefer the *extracted* portable Blender exe (has adjacent DLLs).
+  # The copied tools\blender\4.2.14\blender.exe may fail on CI with
+  # "side-by-side configuration is incorrect" if the DLLs aren't alongside it.
   $candidates = @(
-    (Join-Path $repoRoot 'tools\blender\4.2.14\blender.exe'),
-    (Join-Path $repoRoot 'tools\blender\4.2.14\extracted\blender-4.2.14-windows-x64\blender.exe')
+    (Join-Path $repoRoot 'tools\blender\4.2.14\extracted\blender-4.2.14-windows-x64\blender.exe'),
+    (Join-Path $repoRoot 'tools\blender\4.2.14\blender.exe')
   )
 
   foreach ($candidate in $candidates) {
@@ -31,7 +34,8 @@ Blender executable not found.
 
 - Set env var BLENDER_EXE to the full path to blender.exe
   OR
-- Place portable Blender at: tools\\blender\\4.2.14\\blender.exe
+- Place portable Blender extracted at: tools\\blender\\4.2.14\\extracted\\blender-4.2.14-windows-x64\\blender.exe
+  (or copied exe at tools\\blender\\4.2.14\\blender.exe)
 
 This export-enabled smoke run expects Blender 4.2.14 LTS (Collada exporter present).
 "@

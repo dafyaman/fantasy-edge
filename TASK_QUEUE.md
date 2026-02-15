@@ -9,7 +9,9 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight pas
 
 - **[DONE]** Hardened `.github/workflows/slm_preflight.yml` to invoke preflight via `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ...` for consistent CI behavior.
 
-NEXT: Verify the new `SLM preflight (Blender-free)` workflow passes on GitHub (push/PR), then optionally mark it as a required check on `main`.
+- **[DONE]** Added `.gitignore` rules to keep the repo lean by ignoring `slm-tool/slm-tool-app/` build artifacts and large portable Blender extracts/binaries.
+
+NEXT: Push `slm-workflow-only` to GitHub and verify the new `SLM preflight (Blender-free)` workflow passes on the PR (optionally mark it as a required check on `main`).
 
 - **[DONE]** Ran `slm-tool/scripts/check_preflight.ps1` locally (Blender-free) to validate wiring end-to-end.
 

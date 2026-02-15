@@ -1,5 +1,31 @@
 # SLM-001 — Progress Log
 
+## 2026-02-15 04:21 America/Chicago
+- Updated tracking docs and prepared the repo to push/verify the new Blender-free CI workflow on GitHub.
+  - Files: `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`
+  - Proof: see the subsequent commit in `git log -1 --oneline`.
+
+## 2026-02-15 04:06 America/Chicago
+- Checked local git state for the `slm-workflow-only` branch to prep the next push/PR verification step.
+  - Proof: `git status -sb` → `## slm-workflow-only...origin/slm-workflow-only [ahead 4]` and shows modified `TASK_QUEUE.md` + `progress/PROGRESS_LOG.md`.
+  - Proof: `git remote -v` → `origin https://github.com/dafyaman/fantasy-edge.git`
+
+## 2026-02-15 03:49 America/Chicago
+- Committed repo-leaning ignore rules and checked-in `tools/blender/` placeholder docs so Git keeps the folder structure without tracking Blender binaries.
+  - Commit: `bfe86e2` ("SLM-001: ignore Blender binaries; track tools/blender docs")
+  - Files: `.gitignore`, `tools/blender/.gitignore`, `tools/blender/README.md`
+  - Proof: `git show --name-only --oneline bfe86e2`
+
+## 2026-02-15 03:33 America/Chicago
+- Added `.gitignore` entries to ignore `slm-tool/slm-tool-app/` build artifacts and large portable Blender extracts/binaries (so `git status` stays readable and we don’t accidentally commit huge blobs).
+  - File: `.gitignore`
+  - Proof: `git diff -- .gitignore` (see diff snippet in this run)
+
+## 2026-02-15 03:16 America/Chicago
+- Committed the accumulated SLM pipeline runner + CI work to the `slm-workflow-only` branch so it’s ready to push/PR for GitHub verification.
+  - Commit: `b4d8895` ("SLM-001: add Blender-free preflight + export smoke workflows")
+  - Proof: `git show --name-only --oneline b4d8895` (see output below)
+
 ## 2026-02-15 02:59 America/Chicago
 - Hardened the Blender-free GitHub Actions workflow invocation so it runs `check_preflight.ps1` in a clean, non-interactive PowerShell (`pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ...`).
   - File updated: `.github/workflows/slm_preflight.yml`

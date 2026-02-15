@@ -1,10 +1,11 @@
 # SLM-001 — Task Queue
 
-Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight passes locally**
+Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight now guards against missing Blender downloader script; npm script added for quick preflight**
 
 ## Active / Next
 
 - **[DONE]** Added a lightweight GitHub Actions job that runs `slm-tool/scripts/check_preflight.ps1` (Blender-free) on PRs, in addition to the export-smoke job.
+- **[DONE]** Added `npm run slm:preflight` at repo root to run the Blender-free preflight checks locally/CI via a single command.
 - **[DONE]** Documented the CI check names + how to mark the preflight check as required (see `slm-tool/README_PIPELINE.md`).
 
 - **[DONE]** Hardened `.github/workflows/slm_preflight.yml` to invoke preflight via `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ...` for consistent CI behavior.
@@ -13,16 +14,30 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight pas
 
 - **[DONE]** Pushed `slm-workflow-only` to GitHub (now includes the Blender-free preflight workflow).
 
-NEXT: Push the CI fix commit on `slm-workflow-only` and re-check Actions runs:
-- `SLM ps-exec-export-smoke` was failing because CI couldn’t find `tools/blender/get_blender_portable.ps1`.
-- Fix is committed locally (`b651452`) by allowing that script through `tools/blender/.gitignore`.
+NEXT: Push the CI fix to `origin/slm-workflow-only` and re-check Actions runs:
+- Current Actions status (branch `slm-workflow-only`):
+  - ✅ `SLM preflight (Blender-free)` (run `22034211303`)
+  - ❌ `SLM ps-exec-export-smoke` (run `22034211307`) still fails: missing `tools/blender/get_blender_portable.ps1`
+- Local commits that would fix the failure:
+  - `b651452` (tracks `tools/blender/get_blender_portable.ps1`)
+  - plus bookkeeping: `eda75f2`, `cbeafc8`
+- Proof of pending push (dry-run): `git push --dry-run origin slm-workflow-only` → `a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`
 
-BLOCKED (1 input): OK to `git push origin slm-workflow-only` from this worker? (Yes/No)
+- **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
+
+BLOCKED (1 input): OK to push `slm-workflow-only` to GitHub from this worker? (Yes/No)
+- Review helper (read-only): `pwsh -NoProfile -File slm-tool/scripts/review_pending_push.ps1`
+  - Shows ahead/behind, **dirty working tree flag**, commits-to-push, file list, and `git push --dry-run` output.
+- Safer push helper (defaults to dry-run): `pwsh -NoProfile -File slm-tool/scripts/push_slm_workflow_only.ps1`
+  - Real push (only if approved): `pwsh -NoProfile -File slm-tool/scripts/push_slm_workflow_only.ps1 -ConfirmPush`
+- Proof (dry-run; re-checked 2026-02-15 10:35): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `BEHIND=0 AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, and `a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only` (no push performed).
+- Sanity check (2026-02-15 09:13): `git show --name-only --pretty=oneline b651452` includes `tools/blender/get_blender_portable.ps1` (the missing file causing the GH Actions failure).
 
 - **[DONE]** Ran `slm-tool/scripts/check_preflight.ps1` locally (Blender-free) to validate wiring end-to-end.
 
 - **[DONE]** Added a Blender-free regression check script: `slm-tool/scripts/check_ps_printonly_regression.ps1`.
 - **[DONE]** Wired the regression check into `slm-tool/scripts/check_preflight.ps1` so `preflight` covers it automatically.
+- **[DONE]** Added a preflight guard that fails fast if `tools/blender/get_blender_portable.ps1` is missing (prevents the export-smoke CI workflow from failing with a confusing missing-file error).
 
 1. **[DONE]** Inventory the current `slm-tool/` codebase (entrypoints, CLI surface, build scripts).
 2. **[DONE]** Unblock: locate the *source* for the Blender pipeline / UI (the working tree had only build artifacts).

@@ -1,5 +1,18 @@
 # SLM-001 — Progress Log
 
+## 2026-02-15 10:35 America/Chicago
+- Confirmed the `slm-workflow-only` branch is still **ahead by 3 commits** and captured fresh dry-run push proof (no external push performed).
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `BEHIND=0 AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+
+## 2026-02-15 10:50 America/Chicago
+- Improved the **read-only** pending-push review helper to emit a machine-readable dirty working tree indicator (`DIRTY=...` + uncommitted count), and re-ran it to capture updated proof output.
+  - File: `slm-tool/scripts/review_pending_push.ps1`
+  - Proof: `pwsh -NoProfile -NonInteractive -File slm-tool/scripts/review_pending_push.ps1` → `DIRTY=True (uncommitted entries=3)` and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+
+## 2026-02-15 10:18 America/Chicago
+- Re-ran the pending-push review for `slm-workflow-only` to confirm the CI-fix commits are still queued and capture fresh proof output (no external push performed).
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+
 ## 2026-02-15 05:09 America/Chicago
 - Investigated why `SLM ps-exec-export-smoke` fails on GitHub Actions and fixed the root cause locally.
   - Found failing run: `gh run view 22034211307 --log-failed` → `Expected downloader script not found: ...\tools\blender\get_blender_portable.ps1`.

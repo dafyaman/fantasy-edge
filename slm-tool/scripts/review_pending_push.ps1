@@ -39,6 +39,14 @@ try {
 
   Exec "git status -sb"
 
+  # Uncommitted changes (porcelain output makes this machine-readable).
+  $porcelain = (& git status --porcelain)
+  $dirtyCount = 0
+  if ($porcelain) {
+    $dirtyCount = ($porcelain | Measure-Object).Count
+  }
+  Write-Host ("DIRTY={0} (uncommitted entries={1})" -f ($dirtyCount -gt 0), $dirtyCount) -ForegroundColor Cyan
+
   # Ahead/behind counts.
   $upstream = "origin/$branch"
   $counts = (& git rev-list --left-right --count "$upstream...HEAD" 2>$null)

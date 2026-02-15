@@ -1,6 +1,6 @@
 # SLM-001 — Task Queue
 
-Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified**
+Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified; progress log normalized to UTF-8 for clean diffs**
 
 ## Active / Next
 
@@ -19,13 +19,17 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight gua
 - **[DONE]** Ran `npm run slm:export-smoke` (pinned portable Blender 4.2.14) and confirmed it produces `model.dae` + `report.json` under `slm-tool/_runs/`.
 - **[DONE]** Fixed portable Blender downloader to use `download.blender.org` directly + added a small-zip sanity check (prevents CI from downloading an empty/invalid zip and failing extraction).
 
-NEXT: Re-run GitHub Actions `SLM ps-exec-export-smoke` now that the downloader uses `download.blender.org` (should stop the 0MB zip issue); verify conclusion + artifacts. If it still fails, capture the failing URL/HTTP status and adjust downloader accordingly.
+- **[DONE]** Guarded the `Build slm-tool-app.exe` step in the **ps-exec-smoke** workflow behind a `hashFiles('.../Cargo.toml')` presence check (prevents failures when `slm-tool-app/src-tauri` sources are absent).
+
+NEXT: **Commit + push** the workflow guard that skips `Build slm-tool-app.exe` when `slm-tool/slm-tool-app/src-tauri/Cargo.toml` is absent, then trigger a fresh Actions run for `slm-workflow-only` and confirm it no longer fails on missing `src-tauri`.
+
+- Latest check: run **22042870003** completed **failure**; still dies at `Push-Location slm-tool/slm-tool-app/src-tauri` (guard not present in workflow YAML at head).
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
 
 **[DONE]** Pushed the CI-fix commits to `origin/slm-workflow-only`.
-- Proof: `git push origin slm-workflow-only` → `a2e0dc7..57d5381  slm-workflow-only -> slm-workflow-only`
-- Next: re-check GitHub Actions runs for `slm-workflow-only` (export-smoke should no longer fail on missing `tools/blender/get_blender_portable.ps1`).
+- Proof: `git push origin slm-workflow-only` → `57d5381..380f5b1  slm-workflow-only -> slm-workflow-only`
+- Next: re-check GitHub Actions runs for `slm-workflow-only` (export-smoke should no longer download an empty/invalid zip).
 
 - **[DONE]** Ran `slm-tool/scripts/check_preflight.ps1` locally (Blender-free) to validate wiring end-to-end.
 

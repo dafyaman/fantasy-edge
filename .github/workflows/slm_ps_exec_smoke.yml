@@ -47,6 +47,9 @@ jobs:
           ./scripts/get_blender_lts_portable.ps1 -Version 4.2.14 -ConfirmDownload
 
       - name: Build slm-tool-app.exe (debug)
+        # slm-tool-app sources are not always present in this repo checkout.
+        # Skip the build step when the Tauri project is absent.
+        if: ${{ hashFiles('slm-tool/slm-tool-app/src-tauri/Cargo.toml') != '' }}
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest

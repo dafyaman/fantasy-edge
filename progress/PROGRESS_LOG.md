@@ -1,6 +1,31 @@
-# SLM-001 — Progress Log
+# SLM-001 ΓÇö Progress Log\r\n## 2026-02-15 15:25 America/Chicago
+- Found root cause of continued CI failure: the workflow guard changes exist locally but were **not committed**, so GitHub Actions is still running the old YAML that unconditionally does `Push-Location slm-tool/slm-tool-app/src-tauri`.
+  - Proof (local git state): `git status -sb` → `M .github/workflows/slm_ps_exec_export_smoke.yml` and `M .github/workflows/slm_ps_exec_smoke.yml`
+  - Proof (CI log still failing): `gh run view 22042870003 --log-failed` → `Cannot find path ...\slm-tool\slm-tool-app\src-tauri because it does not exist.`
+  - Guard diff (snippet): added `if: ${{ hashFiles('slm-tool/slm-tool-app/src-tauri/Cargo.toml') != '' }}` to the `Build slm-tool-app.exe (debug)` step in both workflows.
+- Next: commit + push these workflow guard changes, then trigger a fresh Actions run.
 
-## 2026-02-15 12:13 America/Chicago
+## 2026-02-15 15:08 America/Chicago
+- Checked the newly-triggered GitHub Actions run **22042870003** (`SLM ps-exec-export-smoke`) for branch `slm-workflow-only`: **status=completed, conclusion=failure**.
+  - Proof: `gh run view 22042870003 --json status,conclusion,headSha,url` → `status=completed`, `conclusion=failure`, `headSha=380f5b1e42ac...`, `url=https://github.com/dafyaman/fantasy-edge/actions/runs/22042870003`
+  - Proof (log excerpt): `gh run view 22042870003 --log-failed` → `Cannot find path ...\slm-tool\slm-tool-app\src-tauri because it does not exist.`
+- Next: trigger a fresh export-smoke run after the workflow guard commit is on-head; confirm the build step is skipped (or passes) and the pipeline reaches the Blender smoke steps.
+
+## 2026-02-15 14:52 America/Chicago
+- Triggered a fresh GitHub Actions `SLM ps-exec-export-smoke` workflow_dispatch run for `slm-workflow-only` (after guarding the slm-tool-app build steps).
+  - Proof: `gh run list --branch slm-workflow-only --workflow "SLM ps-exec-export-smoke" --limit 1` → `in_progress ... 22042870003 ... 2026-02-15T20:52:46Z`
+- Next: once run 22042870003 completes, inspect logs to confirm both `SLM ps-exec-smoke` and `SLM ps-exec-export-smoke` no longer fail due to missing `slm-tool-app/src-tauri`.
+
+## 2026-02-15 14:35 America/Chicago
+- Normalized `progress/PROGRESS_LOG.md` encoding to UTF-8 (was UTF-16/garbled in diffs).
+  - Proof: file now reads cleanly via OpenClaw `read` (no NUL-separated characters).
+
+## 2026-02-15 13:08 America/Chicago
+- Verified GitHub Actions SLM ps-exec-export-smoke is still failing, and confirmed the failing run is still using an older head SHA (so it does not include our downloader fix).
+  - Proof: gh run list --branch slm-workflow-only --workflow "SLM ps-exec-export-smoke" --limit 5 -> run 22039613728 is ailure.
+  - Proof: gh run view 22039613728 --json headSha,createdAt,conclusion -> headSha=57d53812... (not 380f5b1...).
+  - Proof (log): gh run view 22039613728 --log-failed shows Downloading: https://www.blender.org/download/release/Blender4.2/... then Downloaded OK (0 MB).
+- Next: trigger a new export-smoke run on slm-workflow-only that picks up commit 380f5b1 (downloader uses download.blender.org + sanity check).\r\n\r\n## 2026-02-15 12:13 America/Chicago
 - Pulled the latest CI run list and confirmed `SLM ps-exec-export-smoke` is still failing **before** our downloader fix landed (run timestamp 2026-02-15T17:04Z / 11:04 local).
   - Proof: `gh run list --limit 5` shows export-smoke failure run id `22039613728`.
   - Proof: `gh run view 22039613728 --log-failed` shows `Downloaded OK (0 MB)` from a `blender.org/download/...` redirect URL.
@@ -12,7 +37,7 @@
 - Fixed the downloader script to avoid redirects by using `download.blender.org` directly, and added a sanity check to fail fast if the zip is unexpectedly small.
   - File: `tools/blender/get_blender_portable.ps1`
   - Proof (local run):
-    - `pwsh -File tools/blender/get_blender_portable.ps1 -Version 4.2.14 -Force` → `Downloaded OK (366.6 MB)` and `FOUND_BLENDER_EXE=...\blender.exe`
+    - `pwsh -File tools/blender/get_blender_portable.ps1 -Version 4.2.14 -Force` ΓåÆ `Downloaded OK (366.6 MB)` and `FOUND_BLENDER_EXE=...\blender.exe`
 
 ## 2026-02-15 11:40 America/Chicago
 - Ran the export-enabled smoke via the repo-root npm script and confirmed it produces both `model.dae` and `report.json` (portable Blender 4.2.14 LTS).
@@ -24,31 +49,31 @@
 
 ## 2026-02-15 10:35 America/Chicago
 - Confirmed the `slm-workflow-only` branch is still **ahead by 3 commits** and captured fresh dry-run push proof (no external push performed).
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `BEHIND=0 AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` ΓåÆ `BEHIND=0 AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
 
 ## 2026-02-15 10:50 America/Chicago
 - Improved the **read-only** pending-push review helper to emit a machine-readable dirty working tree indicator (`DIRTY=...` + uncommitted count), and re-ran it to capture updated proof output.
   - File: `slm-tool/scripts/review_pending_push.ps1`
-  - Proof: `pwsh -NoProfile -NonInteractive -File slm-tool/scripts/review_pending_push.ps1` → `DIRTY=True (uncommitted entries=3)` and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+  - Proof: `pwsh -NoProfile -NonInteractive -File slm-tool/scripts/review_pending_push.ps1` ΓåÆ `DIRTY=True (uncommitted entries=3)` and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
 
 ## 2026-02-15 10:18 America/Chicago
 - Re-ran the pending-push review for `slm-workflow-only` to confirm the CI-fix commits are still queued and capture fresh proof output (no external push performed).
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` → `AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_push.ps1` ΓåÆ `AHEAD=3`, `COMMITS_TO_PUSH: b651452, eda75f2, cbeafc8`, and `DRY_RUN_PUSH: a2e0dc7..cbeafc8  slm-workflow-only -> slm-workflow-only`.
 
 ## 2026-02-15 05:09 America/Chicago
 - Investigated why `SLM ps-exec-export-smoke` fails on GitHub Actions and fixed the root cause locally.
-  - Found failing run: `gh run view 22034211307 --log-failed` → `Expected downloader script not found: ...\tools\blender\get_blender_portable.ps1`.
+  - Found failing run: `gh run view 22034211307 --log-failed` ΓåÆ `Expected downloader script not found: ...\tools\blender\get_blender_portable.ps1`.
   - Fix: updated `tools/blender/.gitignore` to allow tracking `get_blender_portable.ps1`, and committed it.
   - Commit: `b651452` ("Track Blender portable downloader script for CI").
 
 ## 2026-02-15 04:53 America/Chicago
-- Tried to verify the GitHub PR/Actions status for the new Blender-free preflight workflow, but I can’t find a public PR for branch `slm-workflow-only` via web search.
+- Tried to verify the GitHub PR/Actions status for the new Blender-free preflight workflow, but I canΓÇÖt find a public PR for branch `slm-workflow-only` via web search.
   - Proof: `web_search` for `site:github.com dafyaman fantasy-edge slm-workflow-only pull request` returned no matching PR results.
   - Unblock needed: paste the PR URL/number (or the Actions run URL) so I can confirm `SLM preflight (Blender-free)` is passing.
 
 ## 2026-02-15 04:37 America/Chicago
 - Pushed the updated `slm-workflow-only` branch to GitHub so the Blender-free preflight workflow can be verified on the PR.
-  - Proof: `git push` → `4dd9c9e..a2e0dc7  slm-workflow-only -> slm-workflow-only`
+  - Proof: `git push` ΓåÆ `4dd9c9e..a2e0dc7  slm-workflow-only -> slm-workflow-only`
 
 ## 2026-02-15 04:21 America/Chicago
 - Updated tracking docs and prepared the repo to push/verify the new Blender-free CI workflow on GitHub.
@@ -57,8 +82,8 @@
 
 ## 2026-02-15 04:06 America/Chicago
 - Checked local git state for the `slm-workflow-only` branch to prep the next push/PR verification step.
-  - Proof: `git status -sb` → `## slm-workflow-only...origin/slm-workflow-only [ahead 4]` and shows modified `TASK_QUEUE.md` + `progress/PROGRESS_LOG.md`.
-  - Proof: `git remote -v` → `origin https://github.com/dafyaman/fantasy-edge.git`
+  - Proof: `git status -sb` ΓåÆ `## slm-workflow-only...origin/slm-workflow-only [ahead 4]` and shows modified `TASK_QUEUE.md` + `progress/PROGRESS_LOG.md`.
+  - Proof: `git remote -v` ΓåÆ `origin https://github.com/dafyaman/fantasy-edge.git`
 
 ## 2026-02-15 03:49 America/Chicago
 - Committed repo-leaning ignore rules and checked-in `tools/blender/` placeholder docs so Git keeps the folder structure without tracking Blender binaries.
@@ -67,12 +92,12 @@
   - Proof: `git show --name-only --oneline bfe86e2`
 
 ## 2026-02-15 03:33 America/Chicago
-- Added `.gitignore` entries to ignore `slm-tool/slm-tool-app/` build artifacts and large portable Blender extracts/binaries (so `git status` stays readable and we don’t accidentally commit huge blobs).
+- Added `.gitignore` entries to ignore `slm-tool/slm-tool-app/` build artifacts and large portable Blender extracts/binaries (so `git status` stays readable and we donΓÇÖt accidentally commit huge blobs).
   - File: `.gitignore`
   - Proof: `git diff -- .gitignore` (see diff snippet in this run)
 
 ## 2026-02-15 03:16 America/Chicago
-- Committed the accumulated SLM pipeline runner + CI work to the `slm-workflow-only` branch so it’s ready to push/PR for GitHub verification.
+- Committed the accumulated SLM pipeline runner + CI work to the `slm-workflow-only` branch so itΓÇÖs ready to push/PR for GitHub verification.
   - Commit: `b4d8895` ("SLM-001: add Blender-free preflight + export smoke workflows")
   - Proof: `git show --name-only --oneline b4d8895` (see output below)
 
@@ -102,7 +127,7 @@
   - Root cause: array-based argument splatting to a `.ps1` script was not reliably binding the `-PrintOnly` switch.
   - Change: switched `Invoke-Runner` to **hashtable** parameter splatting for named args.
   - File: `slm-tool/scripts/slm.ps1`
-  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 run -PrintOnly` → includes `PrintOnly enabled: not executing Blender.`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 run -PrintOnly` ΓåÆ includes `PrintOnly enabled: not executing Blender.`
 
 ## 2026-02-15 00:10 America/Chicago
 - Added a general-purpose PowerShell runner for the Blender pipeline (not the fixture-specific smoke wrapper).
@@ -114,29 +139,29 @@
 - Added a minimal CLI shim/dispatcher for SLM pipeline scripts.
   - File: `slm-tool/scripts/slm.ps1`
   - Subcommands: `run`, `smoke`, `export-smoke`, `preflight`, `find-blender`, `check-collada`
-  - Proof run: `pwsh -NoProfile -File .\slm-tool\scripts\slm.ps1 preflight` → `[check_preflight] OK`
+  - Proof run: `pwsh -NoProfile -File .\slm-tool\scripts\slm.ps1 preflight` ΓåÆ `[check_preflight] OK`
 
 ## 2026-02-14 14:55 America/Chicago
 - Bootstrapped project tracking: added `TASK_QUEUE.md` and `progress/PROGRESS_LOG.md`.
 - WORKFLOW_ONLY_BRANCH: Created branch `slm-workflow-only` from `origin/HEAD`, cherry-picked workflow commit `1c2b817`, and pushed it to GitHub.
-  - Proof: `scripts/prepare_slm_workflow_only_branch.ps1 -ConfirmCreate` → `OK=True`, `CREATED_BRANCH_AT=4dd9c9e`
-  - Proof: `git push -u origin slm-workflow-only` → `* [new branch] slm-workflow-only -> slm-workflow-only`
+  - Proof: `scripts/prepare_slm_workflow_only_branch.ps1 -ConfirmCreate` ΓåÆ `OK=True`, `CREATED_BRANCH_AT=4dd9c9e`
+  - Proof: `git push -u origin slm-workflow-only` ΓåÆ `* [new branch] slm-workflow-only -> slm-workflow-only`
   - PR URL: https://github.com/dafyaman/fantasy-edge/pull/new/slm-workflow-only
 
 ## 2026-02-14 18:25 America/Chicago
 - Step (SLM-001): Tried to run the Blender smoke pipeline using user-provided Blender path `C:\Program Files\Blender Foundation\Blender 5.0\blender.exe`, but it does not exist on this host.
-  - Proof: `if exist "C:\Program Files\Blender Foundation\Blender 5.0\blender.exe" ...` → `BLENDER_MISSING`
+  - Proof: `if exist "C:\Program Files\Blender Foundation\Blender 5.0\blender.exe" ...` ΓåÆ `BLENDER_MISSING`
 
 ## 2026-02-14 15:11 America/Chicago
 - Inventory pass on `slm-tool/` completed. Findings: the folder currently contains **build artifacts** (Tauri `target/`, Vite `dist/`, `node_modules`) plus a compiled python bytecode file `scripts/__pycache__/blender_sl_pipeline.cpython-313.pyc`, but **no readable pipeline source** (`.py`/`.rs`/`.ts`) in this workspace.
-  - Proof: `dir slm-tool` → shows only `scripts/`, `slm-tool-app/`, `_runs/`
-  - Proof: `dir slm-tool\slm-tool-app` → `dist/`, `node_modules/`, `src-tauri/` (no `package.json`)
+  - Proof: `dir slm-tool` ΓåÆ shows only `scripts/`, `slm-tool-app/`, `_runs/`
+  - Proof: `dir slm-tool\slm-tool-app` ΓåÆ `dist/`, `node_modules/`, `src-tauri/` (no `package.json`)
   - Proof: `slm-tool/slm-tool-app/src-tauri/_runs/rel-input-smoke3/report.json` indicates Blender `4.2.14 LTS` and tool name `slm-blender-pipeline` exporting a Collada `.dae`.
 
 ## 2026-02-14 15:32 America/Chicago
 - Recovered the missing Blender pipeline source by restoring `slm-tool/scripts/blender_sl_pipeline.py` from git history (commit `183aa49`).
   - Proof: `git log --all -- slm-tool/scripts/blender_sl_pipeline.py` shows multiple commits including `183aa49`.
-  - Proof: `git checkout 183aa49 -- slm-tool/scripts/blender_sl_pipeline.py` → file now present in working tree (12100 bytes).
+  - Proof: `git checkout 183aa49 -- slm-tool/scripts/blender_sl_pipeline.py` ΓåÆ file now present in working tree (12100 bytes).
   - Proof snippet (file header): `slm-tool/scripts/blender_sl_pipeline.py:1-8` includes the documented Blender headless run example.
 
 ## 2026-02-14 15:47 America/Chicago
@@ -144,10 +169,10 @@
   - Files:
     - `slm-tool/fixtures/cube.obj`
     - `slm-tool/scripts/run_blender_pipeline_smoke.ps1`
-  - Proof: `Get-Command blender` → `blender not found on PATH` (script supports `-BlenderExe` / `BLENDER_EXE`).
+  - Proof: `Get-Command blender` ΓåÆ `blender not found on PATH` (script supports `-BlenderExe` / `BLENDER_EXE`).
 
 ## 2026-02-14 16:03 America/Chicago
-- Improved the smoke runner’s Blender discovery + failure diagnostics (more common install paths + prints checked locations + winget install tip).
+- Improved the smoke runnerΓÇÖs Blender discovery + failure diagnostics (more common install paths + prints checked locations + winget install tip).
   - File: `slm-tool/scripts/run_blender_pipeline_smoke.ps1`
   - Proof snippet: see `slm-tool/scripts/run_blender_pipeline_smoke.ps1:Resolve-BlenderExe` and the `Checked common locations` error output block.
 
@@ -181,23 +206,23 @@
 - Improved Blender smoke runner so it can be used for "command line generation" even on machines without Blender, and fixed a parameter naming bug.
   - Changes:
     - Added `-PrintOnly` (prints the Blender command and exits 0).
-    - Renamed param `$Input` → `$InputPath` to avoid conflict with PowerShell's automatic `$input` variable (which caused the default input path to be empty).
+    - Renamed param `$Input` ΓåÆ `$InputPath` to avoid conflict with PowerShell's automatic `$input` variable (which caused the default input path to be empty).
   - Files: `slm-tool/scripts/run_blender_pipeline_smoke.ps1`
-  - Proof: `pwsh -NoProfile -Command '& .\\slm-tool\\scripts\\run_blender_pipeline_smoke.ps1 -PrintOnly'` →
+  - Proof: `pwsh -NoProfile -Command '& .\\slm-tool\\scripts\\run_blender_pipeline_smoke.ps1 -PrintOnly'` ΓåÆ
     - `Running: <BLENDER_EXE_NOT_FOUND> -b -noaudio --python ... -- --input ...\\slm-tool\\fixtures\\cube.obj ... --no-export`
     - `PrintOnly enabled: not executing Blender.`
 
 ## 2026-02-14 18:03 America/Chicago
 - Added a Blender-free preflight wrapper that validates our PowerShell wiring without requiring Blender.
   - File: `slm-tool/scripts/check_ps_printonly.ps1`
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_ps_printonly.ps1` →
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_ps_printonly.ps1` ΓåÆ
     - `Running: <BLENDER_EXE_NOT_FOUND> -b -noaudio --python ... -- --input ...\\slm-tool\\fixtures\\cube.obj ... --no-export`
     - `[check_ps_printonly] OK`
 
 ## 2026-02-14 18:18 America/Chicago
 - Added a small helper script to locate Blender on Windows and print the most likely `blender.exe` path for `-BlenderExe` / `BLENDER_EXE`.
   - File: `slm-tool/scripts/find_blender.ps1`
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\find_blender.ps1` →
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\find_blender.ps1` ΓåÆ
     - `NOT_FOUND`
     - `Checked:` (lists common locations + `tools/blender/4.2.14/blender.exe`)
     - `Tip: winget install -e --id BlenderFoundation.Blender`
@@ -205,11 +230,11 @@
 ## 2026-02-14 18:35 America/Chicago
 - Added a Blender-free Python syntax check for the restored pipeline script (static compile via `py_compile`).
   - File: `slm-tool/scripts/check_py_compile.ps1`
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` → `OK`
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` ΓåÆ `OK`
 
 ## 2026-02-14 18:51 America/Chicago
 - Verified Blender is still missing on this host by running the locator helper.
-  - Proof: `pwsh -NoProfile -File slm-tool/scripts/find_blender.ps1` → `NOT_FOUND` (checked common install paths + `tools/blender/4.2.14/blender.exe`).
+  - Proof: `pwsh -NoProfile -File slm-tool/scripts/find_blender.ps1` ΓåÆ `NOT_FOUND` (checked common install paths + `tools/blender/4.2.14/blender.exe`).
 
 ## 2026-02-14 19:07 America/Chicago
 - Fixed slm-tool/README_PIPELINE.md to match actual pipeline default output names (model.dae / model.blend).
@@ -218,12 +243,12 @@
 ## 2026-02-14 19:23 America/Chicago
 - Added a single-command preflight runner that aggregates our Blender-free checks (Python syntax compile + PowerShell PrintOnly wiring).
   - File: `slm-tool/scripts/check_preflight.ps1`
-  - Proof: `pwsh -File slm-tool/scripts/check_preflight.ps1` → `[check_preflight] OK`
+  - Proof: `pwsh -File slm-tool/scripts/check_preflight.ps1` ΓåÆ `[check_preflight] OK`
 
 ## 2026-02-14 19:39 America/Chicago
 - Improved Blender locator helper to detect versioned install folders (wildcard search under Program Files / LocalAppData).
   - File: `slm-tool/scripts/find_blender.ps1`
-  - Proof: `pwsh -NoProfile -File slm-tool/scripts/find_blender.ps1` → `FOUND=C:\Program Files\Blender Foundation\Blender 5.0\blender.exe`
+  - Proof: `pwsh -NoProfile -File slm-tool/scripts/find_blender.ps1` ΓåÆ `FOUND=C:\Program Files\Blender Foundation\Blender 5.0\blender.exe`
 
 ## 2026-02-14 19:56 America/Chicago
 - Ran the Blender pipeline smoke end-to-end on this host using Blender 5.0.1, successfully producing a run report.
@@ -245,13 +270,13 @@
 ## 2026-02-14 20:28 America/Chicago
 - Updated the Blender pipeline to auto-enable the Collada export addon (`io_scene_dae`) during headless runs when `bpy.ops.wm.collada_export` is missing.
   - File: `slm-tool/scripts/blender_sl_pipeline.py`
-  - Proof (syntax compile): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` → `OK`
+  - Proof (syntax compile): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` ΓåÆ `OK`
   - Next: re-run export-enabled smoke (`-NoExport $false`) and confirm `model.dae` is produced; if still missing, capture warnings from `report.json` (expect `collada_addon_enable_failed` or `collada_export_failed: ...`).
 
 ## 2026-02-14 20:44 America/Chicago
 - Improved Collada addon enablement for Blender 5.x headless export by switching to `addon_utils.enable(...)` and adding an operator `poll()` availability check before attempting export.
   - File: `slm-tool/scripts/blender_sl_pipeline.py`
-  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` → `[check_py_compile] OK`
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_py_compile.ps1` ΓåÆ `[check_py_compile] OK`
 
 ## 2026-02-14 21:02 America/Chicago
 - Re-ran export-enabled smoke with Blender 5.0.1; Collada addon is missing entirely in this Blender build (so `.dae` export cannot succeed as-is).
@@ -300,14 +325,14 @@
     - Calls: `tools/blender/get_blender_portable.ps1`
     - Ensures: `tools/blender/<version>/blender.exe` exists (copies it from the extracted folder)
   - Proof (no-download mode):
-    - `pwsh -File scripts/get_blender_lts_portable.ps1` →
+    - `pwsh -File scripts/get_blender_lts_portable.ps1` ΓåÆ
       - `Portable Blender not present at: ...\tools\blender\4.2.14\blender.exe`
       - `Re-run with -ConfirmDownload to download + extract Blender 4.2.14 (~400MB).`
 
 ## 2026-02-14 22:57 America/Chicago
 - Added `.gitignore` entries to keep OpenClaw agent meta files from accidentally getting committed.
   - Files ignored: `AGENTS.md`, `BOOTSTRAP.md`, `HEARTBEAT.md`, `IDENTITY.md`, `SOUL.md`, `TOOLS.md`, `USER.md`
-  - Proof: `git diff -- .gitignore` shows the new ignore block under “OpenClaw agent meta files (keep local)”. 
+  - Proof: `git diff -- .gitignore` shows the new ignore block under ΓÇ£OpenClaw agent meta files (keep local)ΓÇ¥. 
 
 ## 2026-02-14 23:13 America/Chicago
 - Added a helper script to check whether the Blender build includes the Collada addon/module (`io_scene_dae`).
@@ -336,9 +361,47 @@
 ## 2026-02-15 01:38 America/Chicago
 - Added a Blender-free regression check to ensure `slm.ps1 run -PrintOnly` does not execute Blender and does not emit a Blender version banner.
   - File: `slm-tool/scripts/check_ps_printonly_regression.ps1`
-  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_ps_printonly_regression.ps1` → `[check_ps_printonly_regression] OK`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_ps_printonly_regression.ps1` ΓåÆ `[check_ps_printonly_regression] OK`
 
 ## 2026-02-15 01:55 America/Chicago
 - Wired the new PrintOnly regression check into the combined preflight script so it runs automatically in `slm.ps1 preflight` / CI preflight contexts.
   - File updated: `slm-tool/scripts/check_preflight.ps1`
-  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_preflight.ps1` → includes `[check_ps_printonly_regression] OK` then `[check_preflight] OK`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_preflight.ps1` ΓåÆ includes `[check_ps_printonly_regression] OK` then `[check_preflight] OK`
+
+
+## 2026-02-15 12:31 America/Chicago
+- Triggered a GitHub Actions rerun of the failing export workflow run so we can verify the downloader fix against CI.
+  - Proof: gh run list --limit 3 shows the export run queued with id 22039613728 (rerun).
+
+
+## 2026-02-15 12:50 America/Chicago
+- Pushed the portable Blender downloader fix (forces download.blender.org; avoids empty zip redirects) to GitHub so CI can re-run export-smoke.
+  - Proof: git push origin slm-workflow-only -> 57d5381..380f5b1
+
+
+
+
+
+## 2026-02-15 13:26 America/Chicago
+- Triggered a fresh GitHub Actions `SLM ps-exec-export-smoke` run for `slm-workflow-only` to pick up headSha `380f5b1...` (downloader fix).
+  - Proof: gh run view 22041655447 --json headSha,status -> headSha=380f5b1e42ac213be065ee23011e130717b185ca status=in_progress
+  - URL: https://github.com/dafyaman/fantasy-edge/actions/runs/22041655447
+
+
+## 2026-02-15 13:43 America/Chicago
+
+- Checked GitHub Actions run 22041655447 for SLM ps-exec-export-smoke on slm-workflow-only headSha 380f5b1e42ac213be065ee23011e130717b185ca: status=completed, conclusion=failure.
+  - Proof: gh run view 22041655447 --json status,conclusion,headSha,url
+  - URL: https://github.com/dafyaman/fantasy-edge/actions/runs/22041655447
+
+
+## 2026-02-15 14:03 America/Chicago
+
+- Investigated failing GitHub Actions run 22041655447 and found the failure is unrelated to Blender download: the workflow tries to build slm-tool-app via Push-Location slm-tool/slm-tool-app/src-tauri, but that directory is absent in the repo checkout.
+  - Proof: gh run view 22041655447 --log-failed shows: Cannot find path ...\slm-tool\slm-tool-app\src-tauri because it does not exist.
+- Implemented fix: guarded the Build slm-tool-app.exe step in .github/workflows/slm_ps_exec_export_smoke.yml behind a presence check for slm-tool/slm-tool-app/src-tauri/Cargo.toml, so CI skips the build when sources are missing.
+  - Proof: see .github/workflows/slm_ps_exec_export_smoke.yml
+
+## 2026-02-15 14:20 America/Chicago
+- CI: Guarded the Build slm-tool-app.exe step in .github/workflows/slm_ps_exec_smoke.yml behind a hashFiles(Cargo.toml) presence check to avoid missing-path failures.
+  - Proof: see git diff for .github/workflows/slm_ps_exec_smoke.yml.

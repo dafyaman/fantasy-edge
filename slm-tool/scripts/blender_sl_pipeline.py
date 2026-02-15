@@ -187,9 +187,29 @@ def main(argv: list[str]) -> int:
 
         dae_path = cfg.out_dir / f"{safe_name}.dae"
 
-        # Blender 5.x can misleadingly report the operator in some probes, but still fail at call time.
-        # Do a cheap preflight so the report is explicit when Collada export isn't available.
-        if not hasattr(bpy.ops.wm, "collada_export"):
+        # Blender 5.x may not have Collada export available unless the addon is enabled.
+        # Attempt to enable it so export works in headless runs.
+        def _collada_export_available() -> bool:
+            op = getattr(bpy.ops.wm, "collada_export", None)
+            if op is None:
+                return False
+            try:
+                return bool(op.poll())
+            except Exception:
+                # If poll() itself errors, treat as unavailable.
+                return False
+
+        if not _collada_export_available():
+            try:
+                import addon_utils
+
+                # addon_utils.enable tends to be more reliable in headless runs than
+                # bpy.ops.preferences.addon_enable.
+                addon_utils.enable("io_scene_dae", default_set=True, persistent=True)
+            except Exception as e:
+                warnings.append(f"collada_addon_enable_failed: {e}")
+
+        if not _collada_export_available():
             warnings.append("collada_export_operator_missing")
         else:
             try:

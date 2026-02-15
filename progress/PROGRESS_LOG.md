@@ -1,5 +1,45 @@
 # SLM-001 — Progress Log
 
+## 2026-02-15 02:59 America/Chicago
+- Hardened the Blender-free GitHub Actions workflow invocation so it runs `check_preflight.ps1` in a clean, non-interactive PowerShell (`pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ...`).
+  - File updated: `.github/workflows/slm_preflight.yml`
+  - Proof snippet: `run:` now calls `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/check_preflight.ps1`
+
+## 2026-02-15 02:43 America/Chicago
+- Documented GitHub Actions CI check names and the exact required-check string for branch protection.
+  - File updated: `slm-tool/README_PIPELINE.md`
+  - Proof snippet: the new "## CI checks" section lists workflows and the required check name `SLM preflight (Blender-free) / preflight`.
+
+## 2026-02-15 02:27 America/Chicago
+- Ran the Blender-free preflight script locally to confirm it completes cleanly (Python compile + PS PrintOnly wiring + regression).
+  - Command: `pwsh -NoProfile -File slm-tool/scripts/check_preflight.ps1`
+  - Proof output: ends with `[check_preflight] OK`
+
+## 2026-02-15 02:11 America/Chicago
+- Added a lightweight GitHub Actions workflow to run the Blender-free preflight checks on pushes/PRs.
+  - New file: `.github/workflows/slm_preflight.yml`
+  - Runs: `slm-tool/scripts/check_preflight.ps1` (Python compile + PS PrintOnly wiring/regression)
+  - Proof: `.github/workflows/slm_preflight.yml` created (see file contents in this run)
+
+## 2026-02-15 01:08 America/Chicago
+- Fixed `slm-tool/scripts/slm.ps1` `-PrintOnly` passthrough so it does **not** execute Blender.
+  - Root cause: array-based argument splatting to a `.ps1` script was not reliably binding the `-PrintOnly` switch.
+  - Change: switched `Invoke-Runner` to **hashtable** parameter splatting for named args.
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 run -PrintOnly` → includes `PrintOnly enabled: not executing Blender.`
+
+## 2026-02-15 00:10 America/Chicago
+- Added a general-purpose PowerShell runner for the Blender pipeline (not the fixture-specific smoke wrapper).
+  - File: `slm-tool/scripts/run_blender_pipeline.ps1`
+  - Supports: `-InputPath`, `-OutDir`, `-NoExport`, `-SaveBlend`, `-PrintOnly`, `-SummaryOnly`
+  - Proof snippet: see `slm-tool/scripts/run_blender_pipeline.ps1:1-20`.
+
+## 2026-02-15 00:29 America/Chicago
+- Added a minimal CLI shim/dispatcher for SLM pipeline scripts.
+  - File: `slm-tool/scripts/slm.ps1`
+  - Subcommands: `run`, `smoke`, `export-smoke`, `preflight`, `find-blender`, `check-collada`
+  - Proof run: `pwsh -NoProfile -File .\slm-tool\scripts\slm.ps1 preflight` → `[check_preflight] OK`
+
 ## 2026-02-14 14:55 America/Chicago
 - Bootstrapped project tracking: added `TASK_QUEUE.md` and `progress/PROGRESS_LOG.md`.
 - WORKFLOW_ONLY_BRANCH: Created branch `slm-workflow-only` from `origin/HEAD`, cherry-picked workflow commit `1c2b817`, and pushed it to GitHub.
@@ -152,3 +192,77 @@
   - File: `tools/blender/get_blender_portable.ps1`
   - Proof (header): includes default `Version='4.2.14'` and URL template `https://www.blender.org/download/release/Blender4.2/blender-$version-$platform.zip`
   - Next: run `pwsh -File tools/blender/get_blender_portable.ps1 -Version 4.2.14`, then rerun `slm-tool/scripts/run_blender_pipeline_smoke.ps1 -NoExport 0` with `BLENDER_EXE` set to the extracted `blender.exe`.
+
+## 2026-02-14 21:36 America/Chicago
+- Ran export-enabled smoke successfully using portable Blender 4.2.14 LTS (Collada addon available there).
+  - Proof command:
+    - $env:BLENDER_EXE='C:\Users\newor\.openclaw\workspace\tools\blender\4.2.14\extracted\blender-4.2.14-windows-x64\blender.exe'; & .\slm-tool\scripts\run_blender_pipeline_smoke.ps1 -NoExport 0 -SaveBlend 0
+  - Proof output: Collada export to: ...\\slm-tool\\_runs\\smoke-20260214-213611\\model.dae and OK: report.json written: ...\\report.json
+  - Proof artifacts:
+    - slm-tool/_runs/smoke-20260214-213611/model.dae (2642 bytes)
+    - slm-tool/_runs/smoke-20260214-213611/report.json (export.collada_dae_bytes=2642)
+
+## 2026-02-14 21:52 America/Chicago
+- Added an export-enabled exec smoke wrapper that pins Blender 4.2.14 LTS by default.
+  - File: `slm-tool/scripts/check_ps_exec_export_smoke.ps1`
+  - Proof snippet: invokes `run_blender_pipeline_smoke.ps1` with `-NoExport 0 -SaveBlend 0` and defaults `BLENDER_EXE` to `tools/blender/4.2.14/blender.exe`.
+
+## 2026-02-14 22:08 America/Chicago
+- Added `.gitignore` entries to ignore OpenClaw workspace noise + SLM-generated artifacts so `git status` is usable.
+  - File: `.gitignore`
+  - Proof: `git diff -- .gitignore` shows new ignores for `logs/`, `_runs/`, `memory/`, `slm-tool/_runs/`, `__pycache__/`, `*.pyc`, `.env.*`, `tts-*`.
+
+## 2026-02-14 22:24 America/Chicago
+- Added a GitHub Actions workflow to run the **export-enabled** Blender pipeline smoke check on Windows runners.
+  - File: `.github/workflows/slm_ps_exec_export_smoke.yml`
+  - Runs: `./slm-tool/scripts/check_ps_exec_export_smoke.ps1` (which pins portable Blender 4.2.14 by default)
+  - Proof: `git diff -- .github/workflows/slm_ps_exec_export_smoke.yml` (see diff snippet below).
+
+## 2026-02-14 22:41 America/Chicago
+- Fixed a CI break: the workflow referenced `./scripts/get_blender_lts_portable.ps1` but the repo only had `tools/blender/get_blender_portable.ps1`.
+  - Added wrapper: `scripts/get_blender_lts_portable.ps1`
+    - Calls: `tools/blender/get_blender_portable.ps1`
+    - Ensures: `tools/blender/<version>/blender.exe` exists (copies it from the extracted folder)
+  - Proof (no-download mode):
+    - `pwsh -File scripts/get_blender_lts_portable.ps1` →
+      - `Portable Blender not present at: ...\tools\blender\4.2.14\blender.exe`
+      - `Re-run with -ConfirmDownload to download + extract Blender 4.2.14 (~400MB).`
+
+## 2026-02-14 22:57 America/Chicago
+- Added `.gitignore` entries to keep OpenClaw agent meta files from accidentally getting committed.
+  - Files ignored: `AGENTS.md`, `BOOTSTRAP.md`, `HEARTBEAT.md`, `IDENTITY.md`, `SOUL.md`, `TOOLS.md`, `USER.md`
+  - Proof: `git diff -- .gitignore` shows the new ignore block under “OpenClaw agent meta files (keep local)”. 
+
+## 2026-02-14 23:13 America/Chicago
+- Added a helper script to check whether the Blender build includes the Collada addon/module (`io_scene_dae`).
+  - File: `slm-tool/scripts/check_blender_collada.ps1`
+  - Proof run (Blender 5.0.1 on this host):
+    - `set BLENDER_EXE=C:\Program Files\Blender Foundation\Blender 5.0\blender.exe && pwsh -File slm-tool/scripts/check_blender_collada.ps1`
+    - Output includes: `[check_blender_collada] Assuming missing.`
+
+## 2026-02-14 23:35 America/Chicago
+- Tightened the export-enabled smoke wrapper so it gives a crisp pass/fail signal:
+  - `slm-tool/scripts/check_ps_exec_export_smoke.ps1` now:
+    - Defaults BLENDER_EXE to the **extracted** portable path (`tools/blender/4.2.14/extracted/.../blender.exe`) in addition to `tools/blender/4.2.14/blender.exe`.
+    - Runs the smoke with an explicit `-OutDir slm-tool/_runs/export-smoke-<timestamp>`.
+    - Asserts `model.dae` exists and `export.collada_dae_bytes > 0` in `report.json`.
+  - Proof run:
+    - `pwsh -NoProfile -File .\slm-tool\scripts\check_ps_exec_export_smoke.ps1`
+    - Output ends with: `[check_ps_exec_export_smoke] OK: model.dae bytes=2642 at ...\slm-tool\_runs\export-smoke-20260214-233504\model.dae`
+
+## 2026-02-14 23:53 America/Chicago
+- Added a `-SummaryOnly` mode to `slm-tool/scripts/run_blender_pipeline_smoke.ps1` to emit a single machine-readable JSON summary line (and suppress Blender stdout/stderr) for downstream tooling.
+  - Proof command:
+    - `$env:BLENDER_EXE='C:\Users\newor\.openclaw\workspace\tools\blender\4.2.14\extracted\blender-4.2.14-windows-x64\blender.exe'; pwsh -NoProfile -File .\slm-tool\scripts\run_blender_pipeline_smoke.ps1 -NoExport:$true -SaveBlend:$false -SummaryOnly`
+  - Proof output (single line):
+    - `{"ok":true,"input":"C:\\Users\\newor\\.openclaw\\workspace\\slm-tool\\fixtures\\cube.obj",...,"report":"...\\report.json",...}`
+
+## 2026-02-15 01:38 America/Chicago
+- Added a Blender-free regression check to ensure `slm.ps1 run -PrintOnly` does not execute Blender and does not emit a Blender version banner.
+  - File: `slm-tool/scripts/check_ps_printonly_regression.ps1`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_ps_printonly_regression.ps1` → `[check_ps_printonly_regression] OK`
+
+## 2026-02-15 01:55 America/Chicago
+- Wired the new PrintOnly regression check into the combined preflight script so it runs automatically in `slm.ps1 preflight` / CI preflight contexts.
+  - File updated: `slm-tool/scripts/check_preflight.ps1`
+  - Proof run: `pwsh -NoProfile -File slm-tool/scripts/check_preflight.ps1` → includes `[check_ps_printonly_regression] OK` then `[check_preflight] OK`

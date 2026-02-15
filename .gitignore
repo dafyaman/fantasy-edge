@@ -23,3 +23,29 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# OpenClaw workspace noise
+logs/
+_runs/
+memory/
+.tmp/
+tmp/
+
+# OpenClaw agent meta files (keep local)
+AGENTS.md
+BOOTSTRAP.md
+HEARTBEAT.md
+IDENTITY.md
+SOUL.md
+TOOLS.md
+USER.md
+
+# SLM tool generated artifacts
+slm-tool/_runs/
+slm-tool/scripts/__pycache__/
+*.pyc
+
+# local env / audio scratch
+.env.*
+tts-*.wav
+tts-*.ogg

@@ -45,6 +45,13 @@ slm-tool/_runs/
 slm-tool/scripts/__pycache__/
 *.pyc
 
+# SLM app build artifacts (keep repo lean)
+slm-tool/slm-tool-app/
+
+# Portable Blender downloads/extracts (large binaries)
+tools/blender/*/extracted/
+tools/blender/*/blender.exe
+
 # local env / audio scratch
 .env.*
 tts-*.wav

@@ -1,0 +1,4 @@
+# Keep this folder structure in git, but don't commit Blender binaries
+*
+!.gitignore
+!README.md

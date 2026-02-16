@@ -1,10 +1,62 @@
 # SLM-001 — Progress Log
+## 2026-02-16 02:33 America/Chicago
+- Local hygiene: ignored timestamped pending-push review artifacts in `.git/info/exclude` so `progress/pending_push_review_*.txt` won’t keep `git status` dirty while awaiting approval to push.
+  - Proof (file): `.git/info/exclude` now contains `progress/pending_push_review_*.txt`
+  - Proof (git): `git status -sb` no longer lists the `progress/pending_push_review_*.txt` files as untracked.
+
+## 2026-02-16 02:18 America/Chicago
+- Re-ran the pending-push review helper to capture a fresh, authoritative ahead/dirty summary before asking for approval to push (no push performed).
+  - Proof (run): `pwsh -NoProfile -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (output excerpt):
+    - `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 6] ...`
+    - `DIRTY=True (uncommitted entries=6)`
+    - `COMMITS_AHEAD_OF_ORIGIN:` ends with `7334753` and starts with `812ebc0`
+
+## 2026-02-16 01:46 America/Chicago
+- Improved the read-only pending-push review helper to explicitly report dirty working tree state + list uncommitted files, making push approval safer.
+  - File: `slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (output excerpt):
+    - `DIRTY=True (uncommitted entries=5)`
+    - `UNCOMMITTED:` then lists the modified/tracked and untracked review artifacts.
+
+## 2026-02-16 01:30 America/Chicago
+- Re-checked the queued `slm-workflow-only` push state (still ahead by 6) and captured current proof output (no push performed).
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; git status -sb; git log --oneline -6"`
+  - Proof (output excerpt):
+    - `## slm-workflow-only...origin/slm-workflow-only [ahead 6]`
+    - commits: `812ebc0`, `116f8cf`, `34380f7`, `e71c91a`, `3db862b`, `7334753`
+
+## 2026-02-16 01:14 America/Chicago
+- Captured a fresh ahead-by-6 review artifact for this tick (includes dirty state + exact commits/files) to support approval to push.
+  - File: `progress/pending_push_review_2026-02-16_0114.txt`
+  - Proof excerpt: contains `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 6]` and `COMMITS_AHEAD_OF_ORIGIN`.
+
+## 2026-02-16 00:58 America/Chicago
+- Captured the pending-push review output (ahead-by-6 summary) to a timestamped file so approval can be based on an immutable artifact.
+  - File: `progress/pending_push_review_2026-02-16_0058.txt`
+  - Proof: `type progress\pending_push_review_2026-02-16_0058.txt` contains `COMMITS_AHEAD_OF_ORIGIN` and the touched file list.
+
+## 2026-02-16 00:42 America/Chicago
+- Re-verified the exact pending push set for `slm-workflow-only` (still ahead by 6) and captured fresh proof output for this tick.
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; ./slm-tool/scripts/review_pending_wrapper_push.ps1"` → `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 6] ...`
+
+## 2026-02-16 00:26 America/Chicago
+- Generated a single reviewable patch bundle containing **all 6 commits** currently ahead of `origin/slm-workflow-only` (so approval to push can be based on one file diff).
+  - File: `progress/pending_push_bundle_ahead6.patch`
+  - Proof: `git format-patch origin/slm-workflow-only..HEAD --stdout > progress\\pending_push_bundle_ahead6.patch` (file size: 432,896 bytes)
+
 ## 2026-02-15 23:53 America/Chicago
 - Committed the local safety/maintenance changes so they can be pushed with the rest of `slm-workflow-only` once approved:
   - Track `progress/fix_progress_log_encoding.ps1` (NUL-strip + UTF-8 rewrite)
   - Keep `slm-tool/scripts/push_slm_workflow_only.ps1` dirty-worktree refusal (override via `-AllowDirty`)
   - Updated tracking docs (`TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`)
   - Proof (commit): see `git show -1 --name-only --oneline` output in this tick.
+
+## 2026-02-16 00:10 America/Chicago
+- Re-verified the exact pending push set for `slm-workflow-only` and reconciled the tracking docs to match current reality (still blocked on approval to push).
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1` → `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 6]` and lists commits ending in `812ebc0`.
+  - Updated: `TASK_QUEUE.md` unblock commit list (replaced stale `511eba6` with `812ebc0`).
 
 ## 2026-02-15 23:37 America/Chicago
 - Hardened `slm-tool/scripts/push_slm_workflow_only.ps1` so it refuses to push when the working tree is dirty unless `-AllowDirty` is passed.
@@ -568,3 +620,8 @@
 
   - Proof: `git diff -- slm-tool/README_PIPELINE.md`
 
+
+## 2026-02-16 02:02 America/Chicago
+- Captured a fresh ahead-by-6 review artifact for this tick (includes dirty state + exact commits/files) to support approval to push.
+  - File: progress/pending_push_review_2026-02-16_0202.txt
+  - Proof: 	ype progress\\pending_push_review_2026-02-16_0202.txt contains the commits list + touched files.

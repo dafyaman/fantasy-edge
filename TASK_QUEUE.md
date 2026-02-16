@@ -39,18 +39,25 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- `slm-workflow-only` is currently **ahead by 6 commits** awaiting push:
+- `slm-workflow-only` is currently **ahead by 6 commits** awaiting push (re-verified via `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree is currently **DIRTY** due to tracking docs + review helper + timestamped review artifacts):
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
   - `e71c91a` (update tracking for pending wrapper push)
   - `34380f7` (document portable Blender layout in README)
-  - `511eba6` (track progress log encoding fixer + harden push helper)
   - `116f8cf` (add pending-wrapper review helper)
+  - `812ebc0` (track progress log encoding fixer + harden push helper)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
+- Latest review artifacts (ahead-by-6 proof):
+  - `progress/pending_push_review_2026-02-16_0202.txt`
+  - `progress/pending_push_review_2026-02-16_0114.txt`
+  - `progress/pending_push_review_2026-02-16_0058.txt`
+- Local hygiene: added `progress/pending_push_review_*.txt` to `.git/info/exclude` so these timestamped review artifacts don’t keep the working tree dirty while we wait for push approval.
 
 Review aids:
 - Read-only summary helper: `slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Now prints `DIRTY=...` and lists `UNCOMMITTED:` entries (safer approval)
 - Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`
+- Patch bundle (all 6 commits ahead-of-origin): `progress/pending_push_bundle_ahead6.patch`
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
   - Proof: `pwsh -File slm-tool/scripts/push_slm_workflow_only.ps1` now fails with `Refusing to push: working tree is dirty...` when `git status` is not clean.

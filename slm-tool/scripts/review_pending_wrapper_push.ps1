@@ -22,6 +22,19 @@ try {
   $status = (git status -sb).Trim()
   Write-Host "STATUS=$status"
 
+  $porcelain = (git status --porcelain)
+  $dirty = $false
+  if ($porcelain) { $dirty = $true }
+  $uncommittedCount = 0
+  if ($porcelain) { $uncommittedCount = @($porcelain).Count }
+  $dirtyColor = 'Green'
+  if ($dirty) { $dirtyColor = 'Yellow' }
+  Write-Host ("DIRTY={0} (uncommitted entries={1})" -f $dirty, $uncommittedCount) -ForegroundColor $dirtyColor
+  if ($dirty) {
+    Write-Host "UNCOMMITTED:" -ForegroundColor Yellow
+    $porcelain | ForEach-Object { Write-Host "  $_" }
+  }
+
   Write-Host "COMMITS_AHEAD_OF_ORIGIN:" -ForegroundColor Cyan
   git log --oneline origin/slm-workflow-only..HEAD
 

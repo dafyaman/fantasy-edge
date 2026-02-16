@@ -1,6 +1,6 @@
 # SLM-001 — Task Queue
 
-Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified; progress log normalized to UTF-8 for clean diffs; portable Blender layout notes (extracted vs direct unzip) captured in README**
+Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified; progress log normalized to UTF-8 for clean diffs; portable Blender layout notes (extracted vs direct unzip) captured in README; pending push set verified (DIRTY_EFFECTIVE=false) awaiting approval to push**
 
 ## Active / Next
 
@@ -29,8 +29,13 @@ NEXT: (superseded; queued count is now 9 — see next item)
 
 - **[DONE]** Worker hygiene: added a UTF-8 artifact writer for pending-push reviews (avoids UTF-16/NUL-separated text).
   - Script: `slm-tool/scripts/write_pending_push_review.ps1`
+  - Latest artifact: `progress/pending_push_review_2026-02-16_1030.txt`
 
-NEXT: (after approval) push the 9 queued `slm-workflow-only` commits so CI picks up the portable Blender layout compatibility fix.
+- **[DONE]** Added a **machine-readable** pending-push summary helper (single-line JSON) to make "OK to push" reviews easier.
+  - Script: `slm-tool/scripts/pending_push_status.ps1`
+  - Commit: `13fb990`
+
+NEXT: (after approval) push the queued `slm-workflow-only` commits so CI picks up the portable Blender layout compatibility fix.
 
 (Internal note: `progress/PROGRESS_LOG.md` had embedded NUL bytes again; added `progress/fix_progress_log_encoding.ps1` to strip/normalize when it happens — now committed locally on `slm-workflow-only`.)
 
@@ -44,7 +49,10 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- `slm-workflow-only` is currently **ahead of origin** awaiting push (see `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree should be **CLEAN** before pushing). Current queued commits (ahead **9**):
+- `slm-workflow-only` is currently **ahead of origin** awaiting push (working tree should be **CLEAN** before pushing). Current queued commits (ahead **12**):
+  - `1428ed9` (add pending-push file list helper)
+  - `13fb990` (add pending-push JSON status helper)
+  - `0a471f0` (commit pending-push review helpers + tracking)
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
   - `e71c91a` (update tracking for pending wrapper push)
@@ -55,15 +63,24 @@ Proof (local runs):
   - `90d26f9` (record clean worktree + ahead7 status)
   - `305f096` (make push blocker text stable — no exact ahead count)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
-- Proof of current state (2026-02-16 04:11):
-  - Review artifact: `progress/pending_push_review_2026-02-16_0411.txt`
-  - Source command: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1`
-  - Output excerpt: `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 9] M TASK_QUEUE.md M progress/PROGRESS_LOG.md M slm-tool/scripts/review_pending_wrapper_push.ps1` and `DIRTY_EFFECTIVE=True (uncommitted entries=1)`.
+- Proof of current state (most recent):
+  - 2026-02-16 11:37 — `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `{ "ahead": 12, "dirty_effective": false, "uncommitted_relevant": [] }`
+    - Snapshot saved: `progress/pending_push_status_2026-02-16_113720.json`
+  - 2026-02-16 11:20 — same command/output → `{ "ahead": 12, "dirty_effective": false, "uncommitted_relevant": [] }`
+    - Snapshot saved: `progress/pending_push_status_2026-02-16_112028.json`
+  - 2026-02-16 11:03 — same command/output → `{ "ahead": 12, "dirty_effective": false, "uncommitted_relevant": [] }`
+  - 2026-02-16 10:47 — same command/output → `ahead=12`, `dirty_effective=false`, `uncommitted_relevant=[]`
+  - 2026-02-16 10:30 — same command/output captured + review artifact: `progress/pending_push_review_2026-02-16_1030.txt`
+- NEXT STEP: after approval, run the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`).
 
 Review aids:
 - Read-only summary helper: `slm-tool/scripts/review_pending_wrapper_push.ps1`
+- File list (machine-readable JSON): `slm-tool/scripts/pending_push_files.ps1`
 - Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`
-- Patch bundle (older, ahead6): `progress/pending_push_bundle_ahead6.patch` (regen needed if you want a single-file diff for the full ahead9 set)
+- Patch bundle (current, ahead11): `progress/pending_push_bundle_ahead11.patch`
+- Patch bundle (older, ahead6): `progress/pending_push_bundle_ahead6.patch`
+- Machine-readable status snapshot (local artifact): `progress/pending_push_status_2026-02-16_0835.json`
+  - Note: ignored via `.git/info/exclude` pattern `progress/pending_push_status_*.json` so it won’t make `DIRTY_EFFECTIVE` true.
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
   - Proof: `pwsh -File slm-tool/scripts/push_slm_workflow_only.ps1` now fails with `Refusing to push: working tree is dirty...` when `git status` is not clean.

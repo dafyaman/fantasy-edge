@@ -1,4 +1,28 @@
 # SLM-001 — Progress Log
+## 2026-02-16 11:37 America/Chicago
+- Captured a fresh timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_113720.json`
+
+## 2026-02-16 11:20 America/Chicago
+- Captured a timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_112028.json`
+
+## 2026-02-16 11:03 America/Chicago
+- Re-verified the queued `slm-workflow-only` pending-push state (no push performed).
+  - Proof (machine-readable): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `{ "ahead": 12, "dirty_effective": false, "uncommitted_relevant": [], "generated_at": "2026-02-16 11:03:40 -06:00" }`
+
+## 2026-02-16 10:47 America/Chicago
+- Re-verified the queued `slm-workflow-only` pending-push state (no push performed).
+  - Proof (machine-readable): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `{ "ahead": 12, "dirty_effective": false, "generated_at": "2026-02-16 10:47:46 -06:00" }`
+
+## 2026-02-16 10:30 America/Chicago
+- Captured a fresh, timestamped pending-push review snapshot (UTF-8) for the queued `slm-workflow-only` commits, and re-verified the machine-readable status (no push performed).
+  - Proof (status): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `{ "ahead": 12, "dirty_effective": false }`
+  - Proof (artifact): `progress/pending_push_review_2026-02-16_1030.txt`
+- Next: awaiting one-time approval to push the queued wrapper commits to `origin/slm-workflow-only`.
+
 ## 2026-02-16 04:29 America/Chicago
 - Added a helper script to write the pending-push review artifact as **UTF-8** (avoids UTF-16/NUL-separated text when capturing logs).
   - File: `slm-tool/scripts/write_pending_push_review.ps1`

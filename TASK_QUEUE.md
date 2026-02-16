@@ -36,8 +36,12 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- I’m going to land the layout-compat fix as a **new commit** on top of `7334753` (keeps history clean).
-- Reply **"OK push SLM wrappers"** and I will push **both commits** (`7334753` + the new compat commit) to `origin/slm-workflow-only`.
+- The portable Blender layout compat fix is now committed locally.
+- `slm-workflow-only` is currently **ahead by 3 commits** awaiting push:
+  - `7334753` (prefer extracted portable Blender in CI wrappers)
+  - `3db862b` (support both portable Blender layouts in CI wrappers)
+  - tracking/docs update commit (TASK_QUEUE + PROGRESS_LOG)
+- Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
 
 Review aid:
 - Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`

@@ -1,4 +1,11 @@
 # SLM-001 — Progress Log
+## 2026-02-15 21:07 America/Chicago
+- Confirmed the portable Blender **layout compatibility fix** is now a committed change (`3db862b`) and the branch is waiting on approval to push.
+  - Proof: `git log -5 --oneline` shows `3db862b` on top of `7334753`.
+  - Proof: `git status -sb` shows `slm-workflow-only...origin/slm-workflow-only [ahead 3]`.
+- Updated `TASK_QUEUE.md` to reflect the exact commits pending push and the single unblock phrase.
+- Committed tracking-doc updates (so the push, once approved, stays self-documenting).
+
 ## 2026-02-15 20:51 America/Chicago
 - Prepared the portable Blender **layout compatibility fix** to be landed as a separate commit on top of `7334753` (so we can push both together once approved).
   - Pending changes (uncommitted):

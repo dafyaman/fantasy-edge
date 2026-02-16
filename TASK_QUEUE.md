@@ -25,7 +25,12 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight gua
 - **[DONE]** Pushed the committed workflow-guard fix (`1a44ecd`) to `origin/slm-workflow-only`.
   - Proof: `git push origin slm-workflow-only` → `380f5b1..1a44ecd  slm-workflow-only -> slm-workflow-only`
 
-NEXT: (after approval) push the 5 queued `slm-workflow-only` commits so CI picks up the portable Blender layout compatibility fix.
+NEXT: (superseded; queued count is now 9 — see next item)
+
+- **[DONE]** Worker hygiene: added a UTF-8 artifact writer for pending-push reviews (avoids UTF-16/NUL-separated text).
+  - Script: `slm-tool/scripts/write_pending_push_review.ps1`
+
+NEXT: (after approval) push the 9 queued `slm-workflow-only` commits so CI picks up the portable Blender layout compatibility fix.
 
 (Internal note: `progress/PROGRESS_LOG.md` had embedded NUL bytes again; added `progress/fix_progress_log_encoding.ps1` to strip/normalize when it happens — now committed locally on `slm-workflow-only`.)
 
@@ -39,7 +44,7 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- `slm-workflow-only` is currently **ahead of origin** awaiting push (see `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree should be **CLEAN** before pushing):
+- `slm-workflow-only` is currently **ahead of origin** awaiting push (see `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree should be **CLEAN** before pushing). Current queued commits (ahead **9**):
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
   - `e71c91a` (update tracking for pending wrapper push)
@@ -47,22 +52,25 @@ Proof (local runs):
   - `116f8cf` (add pending-wrapper review helper)
   - `812ebc0` (track progress log encoding fixer + harden push helper)
   - `2da88c2` (update pending-push review + tracking logs)
-  - `90d26f9` (record clean worktree + ahead-of-origin status)
+  - `90d26f9` (record clean worktree + ahead7 status)
+  - `305f096` (make push blocker text stable — no exact ahead count)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
-- Latest review artifacts (ahead-by-6 proof):
-  - `progress/pending_push_review_2026-02-16_0202.txt`
-  - `progress/pending_push_review_2026-02-16_0114.txt`
-  - `progress/pending_push_review_2026-02-16_0058.txt`
-- Local hygiene: added `progress/pending_push_review_*.txt` to `.git/info/exclude` so these timestamped review artifacts don’t keep the working tree dirty while we wait for push approval.
+- Proof of current state (2026-02-16 04:11):
+  - Review artifact: `progress/pending_push_review_2026-02-16_0411.txt`
+  - Source command: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Output excerpt: `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 9] M TASK_QUEUE.md M progress/PROGRESS_LOG.md M slm-tool/scripts/review_pending_wrapper_push.ps1` and `DIRTY_EFFECTIVE=True (uncommitted entries=1)`.
 
 Review aids:
 - Read-only summary helper: `slm-tool/scripts/review_pending_wrapper_push.ps1`
-  - Now prints `DIRTY=...` and lists `UNCOMMITTED:` entries (safer approval)
 - Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`
-- Patch bundle (all 6 commits ahead-of-origin): `progress/pending_push_bundle_ahead6.patch`
+- Patch bundle (older, ahead6): `progress/pending_push_bundle_ahead6.patch` (regen needed if you want a single-file diff for the full ahead9 set)
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
   - Proof: `pwsh -File slm-tool/scripts/push_slm_workflow_only.ps1` now fails with `Refusing to push: working tree is dirty...` when `git status` is not clean.
+
+- **[DONE]** Improved the pending-push review helper to distinguish **raw dirty** vs **effective dirty** by ignoring the tracking docs (`TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`).
+  - File: `slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof: running it now prints both `DIRTY_RAW=...` and `DIRTY_EFFECTIVE=...` and lists `UNCOMMITTED_RELEVANT` separately.
 
 **[PARTIAL]** Pushed the portable Blender downloader fix to `origin/slm-workflow-only` (head=`380f5b1`).
 - Proof: `git push origin slm-workflow-only` → `57d5381..380f5b1  slm-workflow-only -> slm-workflow-only`

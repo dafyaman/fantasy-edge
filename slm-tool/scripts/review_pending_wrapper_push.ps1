@@ -22,17 +22,42 @@ try {
   $status = (git status -sb).Trim()
   Write-Host "STATUS=$status"
 
-  $porcelain = (git status --porcelain)
-  $dirty = $false
-  if ($porcelain) { $dirty = $true }
-  $uncommittedCount = 0
-  if ($porcelain) { $uncommittedCount = @($porcelain).Count }
+  $porcelain = @(git status --porcelain)
+
+  # Note: this worker updates tracking docs every tick, so it's useful to distinguish
+  # "raw dirty" from "effective dirty" (ignoring known-tracking files).
+  $ignoredPaths = @(
+    'TASK_QUEUE.md',
+    'progress/PROGRESS_LOG.md'
+  )
+
+  $porcelainIgnored = @()
+  $porcelainRelevant = @()
+  foreach ($line in $porcelain) {
+    $isIgnored = $false
+    foreach ($p in $ignoredPaths) {
+      if ($line -match ([regex]::Escape($p) + '$')) { $isIgnored = $true; break }
+    }
+    if ($isIgnored) { $porcelainIgnored += $line } else { $porcelainRelevant += $line }
+  }
+
+  $dirtyRaw = ($porcelain.Count -gt 0)
+  $dirtyEffective = ($porcelainRelevant.Count -gt 0)
+
   $dirtyColor = 'Green'
-  if ($dirty) { $dirtyColor = 'Yellow' }
-  Write-Host ("DIRTY={0} (uncommitted entries={1})" -f $dirty, $uncommittedCount) -ForegroundColor $dirtyColor
-  if ($dirty) {
-    Write-Host "UNCOMMITTED:" -ForegroundColor Yellow
-    $porcelain | ForEach-Object { Write-Host "  $_" }
+  if ($dirtyEffective) { $dirtyColor = 'Yellow' }
+
+  Write-Host ("DIRTY_RAW={0} (uncommitted entries={1})" -f $dirtyRaw, $porcelain.Count)
+  Write-Host ("DIRTY_EFFECTIVE={0} (uncommitted entries={1})" -f $dirtyEffective, $porcelainRelevant.Count) -ForegroundColor $dirtyColor
+
+  if ($dirtyRaw) {
+    Write-Host "UNCOMMITTED_RELEVANT:" -ForegroundColor Yellow
+    if ($porcelainRelevant.Count -eq 0) { Write-Host "  (none)" } else { $porcelainRelevant | ForEach-Object { Write-Host "  $_" } }
+
+    if ($porcelainIgnored.Count -gt 0) {
+      Write-Host "UNCOMMITTED_IGNORED:" -ForegroundColor DarkYellow
+      $porcelainIgnored | ForEach-Object { Write-Host "  $_" }
+    }
   }
 
   Write-Host "COMMITS_AHEAD_OF_ORIGIN:" -ForegroundColor Cyan

@@ -1,4 +1,42 @@
 # SLM-001 — Progress Log
+## 2026-02-16 04:29 America/Chicago
+- Added a helper script to write the pending-push review artifact as **UTF-8** (avoids UTF-16/NUL-separated text when capturing logs).
+  - File: `slm-tool/scripts/write_pending_push_review.ps1`
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/write_pending_push_review.ps1`
+  - Proof (artifact): `progress/pending_push_review_2026-02-16_0429.txt` (written via `Out-File -Encoding utf8NoBOM`)
+
+## 2026-02-16 04:11 America/Chicago
+- Captured a fresh pending-push review snapshot (ahead/dirty status + commit list) for `slm-workflow-only` (no push performed).
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (artifact): `progress/pending_push_review_2026-02-16_0411.txt`
+  - Proof (output excerpt): `DIRTY_EFFECTIVE=True (uncommitted entries=1)` and `UNCOMMITTED_RELEVANT: M slm-tool/scripts/review_pending_wrapper_push.ps1`
+
+## 2026-02-16 03:54 America/Chicago
+- Updated the pending-push review helper to report **DIRTY_RAW** vs **DIRTY_EFFECTIVE** (ignoring the two tracking docs that this cron worker always touches).
+  - File: `slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (output excerpt): `DIRTY_RAW=True (uncommitted entries=3)` and `DIRTY_EFFECTIVE=True (uncommitted entries=1)` and `UNCOMMITTED_RELEVANT: M slm-tool/scripts/review_pending_wrapper_push.ps1`
+
+## 2026-02-16 03:39 America/Chicago
+- Captured a timestamped pending-push review artifact for approval to push the queued `slm-workflow-only` commits (no push performed).
+  - File: `progress/pending_push_review_2026-02-16_0339.txt`
+  - Proof (output excerpt): `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 9] M TASK_QUEUE.md M progress/PROGRESS_LOG.md` and `DIRTY=True`
+
+## 2026-02-16 03:22 America/Chicago
+- Re-ran the pending-push review helper to capture current ahead/dirty status for `slm-workflow-only` (no push performed).
+  - Proof (run): `pwsh -NoProfile -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (output excerpt):
+    - `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 9] M TASK_QUEUE.md M progress/PROGRESS_LOG.md`
+    - `DIRTY=True (uncommitted entries=2)`
+
+## 2026-02-16 03:06 America/Chicago
+- Ran the read-only pending-push review helper to capture authoritative current state (no push performed).
+  - Proof (run): `pwsh -NoProfile -File slm-tool/scripts/review_pending_wrapper_push.ps1`
+  - Proof (output excerpt):
+    - `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 9]`
+    - `DIRTY=False (uncommitted entries=0)`
+    - `COMMITS_AHEAD_OF_ORIGIN:` starts with `305f096` and ends with `7334753`
+
 ## 2026-02-16 02:49 America/Chicago
 - Committed the tracking-doc + pending-push helper updates so the working tree is clean again (reduces risk when/if we push the queued wrapper commits).
   - Proof (commit): `2da88c2` ("SLM-001: update pending-push review + tracking logs")

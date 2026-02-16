@@ -65,3 +65,15 @@ jobs:
         shell: pwsh
         run: |
           ./slm-tool/scripts/check_ps_exec_smoke.ps1
+
+      - name: Write deterministic smoke-summary JSON artifact
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/slm.ps1 smoke-summary -OutPath ./progress/smoke_summary_ci.json
+
+      - name: Upload smoke-summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slm-smoke-summary
+          path: progress/smoke_summary_ci.json

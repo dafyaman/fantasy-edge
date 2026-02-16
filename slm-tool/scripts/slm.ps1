@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','export-smoke','preflight','find-blender','check-collada')]
+  [ValidateSet('run','smoke','smoke-summary','export-smoke','preflight','find-blender','check-collada')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -22,7 +22,10 @@ param(
   [Nullable[bool]]$NoExport,
   [Nullable[bool]]$SaveBlend,
   [switch]$PrintOnly,
-  [switch]$SummaryOnly
+  [switch]$SummaryOnly,
+
+  # smoke-summary only
+  [string]$OutPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -75,6 +78,21 @@ switch ($Command) {
   }
   'smoke' {
     Invoke-Runner -ScriptPath (Join-Path $here 'run_blender_pipeline_smoke.ps1') -BlenderExe $BlenderExe -InputPath $InputPath -OutDir $OutDir -Preset $Preset -NoExport $NoExport -SaveBlend $SaveBlend -PrintOnly:([bool]$PrintOnly) -SummaryOnly:([bool]$SummaryOnly)
+  }
+  'smoke-summary' {
+    # Runs the smoke pipeline in SummaryOnly mode and validates the JSON schema.
+    $p = if ($Preset) { $Preset } else { 'prop' }
+
+    $args = @{
+      Preset = $p
+      Quiet  = $true
+    }
+    if ($BlenderExe) { $args.BlenderExe = $BlenderExe }
+    if ($InputPath)  { $args.InputPath  = $InputPath }
+    if ($OutDir)     { $args.OutDir     = $OutDir }
+    if ($OutPath)    { $args.OutPath    = $OutPath }
+
+    & (Join-Path $here 'run_smoke_summary.ps1') @args
   }
   'export-smoke' {
     # If user asks for PrintOnly/SummaryOnly (or overrides like -OutDir), run the underlying smoke runner

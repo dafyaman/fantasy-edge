@@ -1,4 +1,64 @@
 # SLM-001 — Progress Log
+## 2026-02-16 14:55 America/Chicago
+- Staged and prepared a commit on `slm-workflow-only` to publish the `smoke-summary` JSON as a deterministic Actions artifact in **both** Windows workflows (smoke + export-smoke), and wired `slm smoke-summary` into the CLI shim.
+  - Proof (staged diff): `git diff --cached --stat` includes:
+    - `.github/workflows/slm_ps_exec_smoke.yml`
+    - `.github/workflows/slm_ps_exec_export_smoke.yml`
+    - `slm-tool/scripts/slm.ps1`
+    - `slm-tool/scripts/run_smoke_summary.ps1`
+
+## 2026-02-16 14:39 America/Chicago
+- Mirrored the smoke-summary artifact publishing step into the `SLM ps-exec-export-smoke` GitHub Actions workflow.
+  - Proof (diff): `git diff -- .github/workflows/slm_ps_exec_export_smoke.yml` shows it writes `./progress/smoke_summary_ci.json` and uploads artifact `slm-smoke-summary`.
+
+## 2026-02-16 14:23 America/Chicago
+- Wired the new `smoke-summary -OutPath` output into the `SLM ps-exec-smoke` GitHub Actions workflow and added an upload-artifact step.
+  - Proof (diff): `git diff -- .github/workflows/slm_ps_exec_smoke.yml` shows it writes `./progress/smoke_summary_ci.json` and uploads artifact `slm-smoke-summary`.
+
+## 2026-02-16 14:07 America/Chicago
+- Added `-OutPath` support to `slm-tool/scripts/run_smoke_summary.ps1` and surfaced it via the CLI shim (`slm smoke-summary`).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\slm-tool\scripts\slm.ps1 smoke-summary -OutPath .\progress\smoke_summary_latest.json`
+  - Proof (artifact): `progress/smoke_summary_latest.json` (single-line JSON)
+
+## 2026-02-16 13:49 America/Chicago
+- Captured a real `slm smoke-summary` JSON-line artifact for downstream tooling.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\slm-tool\scripts\slm.ps1 smoke-summary > progress\smoke_summary_2026-02-16_134948.json`
+  - Proof (artifact): `progress/smoke_summary_2026-02-16_134948.json` (462 bytes)
+  - Proof (first line):
+    - `{ "ok": true, "input": "C:\\Users\\newor\\.openclaw\\workspace\\slm-tool\\fixtures\\cube.obj", ... }`
+
+## 2026-02-16 13:16 America/Chicago
+- Tried to run the new `smoke-summary` command locally to capture a real JSON-line artifact, but the wrapper currently fails because it captures *no stdout* from the smoke runner.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\slm-tool\scripts\slm.ps1 smoke-summary`
+  - Proof (error): `slm-tool/scripts/run_smoke_summary.ps1:26` throws `Smoke summary produced no output.`
+  - Suspected cause: the smoke runner is likely emitting the JSON via `Write-Host` (not capturable), so `run_smoke_summary.ps1` receives `$null`.
+  - Next: tweak the smoke runner / summary emission to use `Write-Output` for the JSON line (and keep any human text on stderr/host).
+
+## 2026-02-16 12:59 America/Chicago
+- Documented the new `smoke-summary` command in `slm-tool/README_PIPELINE.md` (includes both CLI shim + npm script, and notes it outputs exactly one JSON line).
+  - Proof: `git diff -- slm-tool/README_PIPELINE.md` shows the new "Smoke summary" section.
+
+## 2026-02-16 12:43 America/Chicago
+- Wired the smoke-summary helper into the CLI shim and added a repo-root npm script.
+  - CLI: `pwsh -File slm-tool/scripts/slm.ps1 smoke-summary`
+  - npm: `npm run -s slm:smoke-summary`
+  - Proof (diff excerpt): `git diff -- slm-tool/scripts/slm.ps1 package.json` shows the new `smoke-summary` subcommand and `slm:smoke-summary` script.
+
+## 2026-02-16 12:25 America/Chicago
+- Added a tiny smoke-summary helper that executes the smoke pipeline in `-SummaryOnly` mode and validates a minimal JSON schema (stable keys + nesting), then re-echoes the JSON line for downstream tooling.
+  - File: `slm-tool/scripts/run_smoke_summary.ps1`
+  - Proof: `dir slm-tool/scripts/run_smoke_summary.ps1` and `git diff -- slm-tool/scripts/run_smoke_summary.ps1`.
+
+## 2026-02-16 12:09 America/Chicago
+- Re-ran the Blender-free preflight locally to ensure the repo is still in a good state after the recent `slm-workflow-only` pushes.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1`
+  - Proof (output excerpt): ends with `[check_preflight] OK` (and prints the generated PrintOnly Blender command line).
+
+## 2026-02-16 11:53 America/Chicago
+- Verified GitHub Actions status for `slm-workflow-only` after the push: all three SLM workflows are now **green** on the latest run set.
+  - Proof (command): `gh run list --repo dafyaman/fantasy-edge --branch slm-workflow-only --limit 5`
+  - Proof (run ids): `22072827186` (ps-exec-smoke), `22072827199` (ps-exec-export-smoke), `22072827189` (preflight)
+
 ## 2026-02-16 11:37 America/Chicago
 - Captured a fresh timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
   - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
@@ -696,3 +756,6 @@
 - Captured a fresh ahead-by-6 review artifact for this tick (includes dirty state + exact commits/files) to support approval to push.
   - File: progress/pending_push_review_2026-02-16_0202.txt
   - Proof: 	ype progress\\pending_push_review_2026-02-16_0202.txt contains the commits list + touched files.
+
+## 2026-02-16 13:34 America/Chicago
+- (Removed: corrupted log entry)

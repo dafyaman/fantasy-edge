@@ -42,7 +42,8 @@ try {
   Info "git status -sb:"
   & git status -sb
 
-  $dirty = (& git status --porcelain).Trim()
+  $dirtyRaw = (& git status --porcelain)
+  $dirty = if ($null -eq $dirtyRaw) { '' } else { ($dirtyRaw | Out-String).Trim() }
   if ($dirty -and (-not $AllowDirty)) {
     throw "Refusing to push: working tree is dirty. Commit/stash changes or pass -AllowDirty."
   }

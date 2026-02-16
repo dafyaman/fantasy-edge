@@ -2,7 +2,7 @@
 ## 2026-02-16 02:49 America/Chicago
 - Committed the tracking-doc + pending-push helper updates so the working tree is clean again (reduces risk when/if we push the queued wrapper commits).
   - Proof (commit): `2da88c2` ("SLM-001: update pending-push review + tracking logs")
-  - Proof (git): `git status -sb` now shows `ahead 7` with no modified files.
+  - Proof (git): `git status -sb` shows the branch is ahead of origin with no modified files.
 
 ## 2026-02-16 02:33 America/Chicago
 - Local hygiene: ignored timestamped pending-push review artifacts in `.git/info/exclude` so `progress/pending_push_review_*.txt` won’t keep `git status` dirty while awaiting approval to push.

@@ -39,7 +39,7 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- `slm-workflow-only` is currently **ahead by 7 commits** awaiting push (re-verified via `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree is currently **CLEAN**):
+- `slm-workflow-only` is currently **ahead of origin** awaiting push (see `slm-tool/scripts/review_pending_wrapper_push.ps1`; working tree should be **CLEAN** before pushing):
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
   - `e71c91a` (update tracking for pending wrapper push)
@@ -47,6 +47,7 @@ Proof (local runs):
   - `116f8cf` (add pending-wrapper review helper)
   - `812ebc0` (track progress log encoding fixer + harden push helper)
   - `2da88c2` (update pending-push review + tracking logs)
+  - `90d26f9` (record clean worktree + ahead-of-origin status)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
 - Latest review artifacts (ahead-by-6 proof):
   - `progress/pending_push_review_2026-02-16_0202.txt`

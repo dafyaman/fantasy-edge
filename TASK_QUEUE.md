@@ -24,11 +24,23 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight gua
 - **[DONE]** Pushed the committed workflow-guard fix (`1a44ecd`) to `origin/slm-workflow-only`.
   - Proof: `git push origin slm-workflow-only` → `380f5b1..1a44ecd  slm-workflow-only -> slm-workflow-only`
 
-NEXT: **Push the CI Blender extracted-path fix commit(s)**, then re-run/verify GitHub Actions on `slm-workflow-only`.
-- `SLM ps-exec-smoke` and `SLM ps-exec-export-smoke` were failing with `side-by-side configuration is incorrect` because CI invoked the *copied* `tools/blender/4.2.14/blender.exe` without adjacent DLLs.
-- Fix is now committed locally: both wrappers prefer the *extracted* portable Blender path under `tools/blender/4.2.14/extracted/.../blender.exe`.
-- After push: confirm both workflows pass on Windows runners.
-- Note: `SLM preflight (Blender-free)` is already passing on this branch.
+NEXT: Decide how to incorporate the **portable Blender layout compatibility fix** into the pending CI push.
+
+Context:
+- Pending commit `7334753` makes CI wrappers prefer `tools\\blender\\4.2.14\\extracted\\...\\blender.exe` first (avoids Windows `side-by-side configuration is incorrect`).
+- On this workstation, the portable Blender unzip currently lives at `tools\\blender\\4.2.14\\blender-4.2.14-windows-x64\\blender.exe` (no `extracted\\` folder).
+- I updated both wrappers to support **both** layouts (`extracted\\...` and direct `blender-...\\blender.exe`) and validated locally with real Blender runs.
+
+Proof (local runs):
+- `pwsh -File slm-tool/scripts/check_ps_exec_smoke.ps1` → uses `...\tools\blender\4.2.14\blender-4.2.14-windows-x64\blender.exe` and writes `slm-tool/_runs/smoke-20260215-201953/report.json`.
+- `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
+
+**UNBLOCK NEEDED (one-time OK to push):**
+- I’m going to land the layout-compat fix as a **new commit** on top of `7334753` (keeps history clean).
+- Reply **"OK push SLM wrappers"** and I will push **both commits** (`7334753` + the new compat commit) to `origin/slm-workflow-only`.
+
+Review aid:
+- Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
 

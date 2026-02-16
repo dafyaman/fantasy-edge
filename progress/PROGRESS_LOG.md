@@ -1,4 +1,74 @@
 # SLM-001 — Progress Log
+## 2026-02-15 20:51 America/Chicago
+- Prepared the portable Blender **layout compatibility fix** to be landed as a separate commit on top of `7334753` (so we can push both together once approved).
+  - Pending changes (uncommitted):
+    - `slm-tool/scripts/check_ps_exec_smoke.ps1`
+    - `slm-tool/scripts/check_ps_exec_export_smoke.ps1`
+  - Proof: `git status -sb` shows both wrappers modified (see run output in this tick).
+
+## 2026-02-15 20:35 America/Chicago
+- Exported a reviewable **worktree patch** for the portable Blender layout compatibility fix (so it can be reviewed/approved before deciding amend-vs-new-commit).
+  - File: `progress/pending_push_blender_layout_compat_worktree.patch`
+  - Proof: `git diff -- slm-tool/scripts/check_ps_exec_smoke.ps1 slm-tool/scripts/check_ps_exec_export_smoke.ps1 > progress\\pending_push_blender_layout_compat_worktree.patch` (size 4477 bytes)
+
+## 2026-02-15 20:18 America/Chicago
+- Fixed the CI wrapper Blender exe discovery to support **both** portable layouts:
+  - `tools\blender\4.2.14\extracted\blender-...\blender.exe` (CI-friendly)
+  - `tools\blender\4.2.14\blender-...\blender.exe` (current local layout)
+- Validated both wrappers by running them locally (real Blender 4.2.14 LTS):
+  - Smoke (no export): wrote `slm-tool/_runs/smoke-20260215-201953/report.json`
+  - Export smoke: wrote `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and printed `[check_ps_exec_export_smoke] OK...`
+- Files changed (uncommitted):
+  - `slm-tool/scripts/check_ps_exec_smoke.ps1`
+  - `slm-tool/scripts/check_ps_exec_export_smoke.ps1`
+
+## 2026-02-15 20:01 America/Chicago
+- Kept the pending-push review patch artifacts local-only without dirtying tracked `.gitignore` by moving the ignore rule into `.git/info/exclude`.
+  - Why: keeps `git status` clean while awaiting approval to push commit `7334753`.
+  - Proof:
+    - `git diff --name-only` → only tracking docs changed (`TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`).
+    - `.git/info/exclude` now includes `progress/pending_push_*.patch`.
+
+## 2026-02-15 19:45 America/Chicago
+- Verified the pending push commit `7334753` is still the only commit ahead of `origin/slm-workflow-only` and captured the exact files it will push.
+  - Proof:
+    - `git status -sb` → `## slm-workflow-only...origin/slm-workflow-only [ahead 1]`
+    - `git show 7334753 --name-only` → touches:
+      - `slm-tool/scripts/check_ps_exec_smoke.ps1`
+      - `slm-tool/scripts/check_ps_exec_export_smoke.ps1`
+      - (tracking docs) `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`
+- Reverted an accidental local `.gitignore` edit so the only remaining uncommitted changes are the tracking docs.
+
+## 2026-02-15 19:29 America/Chicago
+- Captured a reviewable **diff excerpt** proving what’s in pending commit `7334753` (CI wrappers prefer the extracted portable Blender exe first).
+  - Proof: `git show 7334753 -- slm-tool/scripts/check_ps_exec_smoke.ps1` includes:
+    - `tools\\blender\\4.2.14\\extracted\\blender-4.2.14-windows-x64\\blender.exe`
+
+## 2026-02-15 19:12 America/Chicago
+- Ignored local patch-export artifacts so `git status` stays clean while awaiting approval to push `7334753`.
+  - Change: added `progress/pending_push_*.patch` to `.gitignore`
+  - Proof: `git diff -- .gitignore` (see below)
+
+## 2026-02-15 18:57 America/Chicago
+- Generated a **code-only** review patch for the pending CI fix commit `7334753` (excludes tracking docs so it’s easier to skim/apply).
+  - File: `progress/pending_push_7334753_code_only.patch`
+  - Proof: `git format-patch -1 7334753 --stdout -- slm-tool/scripts/check_ps_exec_smoke.ps1 slm-tool/scripts/check_ps_exec_export_smoke.ps1 > progress\\pending_push_7334753_code_only.patch`
+
+## 2026-02-15 18:40 America/Chicago
+- Generated a reviewable patch for the pending CI fix commit (`7334753`) so it can be approved before pushing.
+  - File: `progress/pending_push_7334753.patch`
+  - Proof: `git format-patch -1 7334753 --stdout > progress\\pending_push_7334753.patch`
+
+## 2026-02-15 18:24 America/Chicago
+- Updated task tracking to make the blocker explicit and actionable: need a one-time OK to push commit `7334753` to `origin/slm-workflow-only`.
+  - Proof: `TASK_QUEUE.md` now says: `BLOCKED (needs one-time OK): reply with "OK to push 7334753" and I will push to GitHub.`
+
+## 2026-02-15 18:08 America/Chicago
+- Re-checked local branch state for `slm-workflow-only`: still **ahead by 1 commit** (pending push commit `7334753`). No external push performed.
+  - Proof: `git status -sb` → `## slm-workflow-only...origin/slm-workflow-only [ahead 1]`
+  - Proof: `git log -1 --oneline` → `7334753 SLM-001: prefer extracted portable Blender in CI wrappers`
+- Blocked pending one-time confirmation to push `7334753` to `origin/slm-workflow-only`.
+
 ## 2026-02-15 17:19 America/Chicago
 - Committed the CI fix so GitHub Actions can use the *extracted* portable Blender exe (avoids Windows `side-by-side configuration is incorrect`).
   - Files: `slm-tool/scripts/check_ps_exec_smoke.ps1`, `slm-tool/scripts/check_ps_exec_export_smoke.ps1`

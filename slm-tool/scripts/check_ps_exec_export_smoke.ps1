@@ -12,11 +12,13 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $blenderExe = $env:BLENDER_EXE
 
 if ([string]::IsNullOrWhiteSpace($blenderExe)) {
-  # Prefer the *extracted* portable Blender exe (has adjacent DLLs).
+  # Prefer a portable Blender exe that lives beside its DLLs.
+  # (Some local layouts extracted directly under tools\blender\4.2.14\blender-...)
   # The copied tools\blender\4.2.14\blender.exe may fail on CI with
   # "side-by-side configuration is incorrect" if the DLLs aren't alongside it.
   $candidates = @(
     (Join-Path $repoRoot 'tools\blender\4.2.14\extracted\blender-4.2.14-windows-x64\blender.exe'),
+    (Join-Path $repoRoot 'tools\blender\4.2.14\blender-4.2.14-windows-x64\blender.exe'),
     (Join-Path $repoRoot 'tools\blender\4.2.14\blender.exe')
   )
 
@@ -24,6 +26,14 @@ if ([string]::IsNullOrWhiteSpace($blenderExe)) {
     if (Test-Path $candidate) {
       $blenderExe = $candidate
       break
+    }
+  }
+
+  if ([string]::IsNullOrWhiteSpace($blenderExe)) {
+    # Fallback globs for future naming/layout changes.
+    $found = Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tools\blender\4.2.14') -Filter 'blender.exe' -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($found) {
+      $blenderExe = $found.FullName
     }
   }
 }

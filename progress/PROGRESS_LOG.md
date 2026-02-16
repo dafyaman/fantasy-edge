@@ -1,7 +1,7 @@
 # SLM-001 — Progress Log
 ## 2026-02-16 14:55 America/Chicago
-- Staged and prepared a commit on `slm-workflow-only` to publish the `smoke-summary` JSON as a deterministic Actions artifact in **both** Windows workflows (smoke + export-smoke), and wired `slm smoke-summary` into the CLI shim.
-  - Proof (staged diff): `git diff --cached --stat` includes:
+- Committed `smoke-summary` support on `slm-workflow-only` (commit `2ceb819`) to publish the `smoke-summary` JSON as a deterministic Actions artifact in **both** Windows workflows (smoke + export-smoke), and wired `slm smoke-summary` into the CLI shim.
+  - Proof (commit): `git show --name-only --oneline 2ceb819` includes:
     - `.github/workflows/slm_ps_exec_smoke.yml`
     - `.github/workflows/slm_ps_exec_export_smoke.yml`
     - `slm-tool/scripts/slm.ps1`

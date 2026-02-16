@@ -25,9 +25,9 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 - **[DONE]** Mirrored the same smoke-summary artifact step in `SLM ps-exec-export-smoke` so export runs also publish the JSON summary.
 
-- **[DONE]** Committed the smoke-summary CI artifact upload steps + `slm smoke-summary` CLI wiring on `slm-workflow-only`.
+- **[DONE]** Committed the smoke-summary CI artifact upload steps + `slm smoke-summary` CLI wiring on `slm-workflow-only` (commit `2ceb819`).
 
-- **NEXT** If you want this live in GitHub Actions: reply with **"OK to push smoke-summary commit"** and I’ll push `slm-workflow-only` to `origin`.
+- **NEXT** If you want this live in GitHub Actions: reply with **"OK to push 2ceb819"** and I’ll push `slm-workflow-only` to `origin`.
 
 - **[DONE]** Added a lightweight GitHub Actions job that runs `slm-tool/scripts/check_preflight.ps1` (Blender-free) on PRs, in addition to the export-smoke job.
 - **[DONE]** Wired repo-root `package.json` script `slm:preflight` to run the Blender-free preflight checks locally/CI via a single command (`npm run slm:preflight`).

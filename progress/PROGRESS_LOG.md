@@ -1,4 +1,24 @@
 # SLM-001 — Progress Log
+## 2026-02-16 16:02 America/Chicago
+- Added a Windows `cmd.exe` wrapper for the SLM CLI shim so you can run `slm-tool\scripts\slm.cmd <command>` from `cmd` without manually invoking PowerShell.
+  - File: `slm-tool/scripts/slm.cmd`
+  - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → `C:\Users\newor\.openclaw\workspace\slm-tool\scripts\smoke_summary.schema.json`
+
+## 2026-02-16 15:46 America/Chicago
+- Added `slm smoke-summary-schema` convenience command (alias for `slm smoke-summary -Schema`) for easier schema discovery.
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\slm-tool\scripts\slm.ps1 smoke-summary-schema` → `C:\Users\newor\.openclaw\workspace\slm-tool\scripts\smoke_summary.schema.json`
+  - File: `slm-tool/scripts/slm.ps1`
+
+## 2026-02-16 15:29 America/Chicago
+- Added a `-Schema` discovery mode for `slm smoke-summary` so downstream tools can find the JSON Schema file programmatically (no Blender required).
+  - Proof: `pwsh -File slm-tool/scripts/slm.ps1 smoke-summary -Schema` → prints the schema path.
+  - Files: `slm-tool/scripts/run_smoke_summary.ps1`, `slm-tool/scripts/slm.ps1`
+
+## 2026-02-16 15:13 America/Chicago
+- Added an explicit JSON Schema file describing the stable `slm smoke-summary` output shape (required keys + nesting).
+  - File: `slm-tool/scripts/smoke_summary.schema.json`
+  - Proof: `git diff --name-only` shows `slm-tool/scripts/smoke_summary.schema.json`
+
 ## 2026-02-16 14:55 America/Chicago
 - Committed `smoke-summary` support on `slm-workflow-only` (commit `2ceb819`) to publish the `smoke-summary` JSON as a deterministic Actions artifact in **both** Windows workflows (smoke + export-smoke), and wired `slm smoke-summary` into the CLI shim.
   - Proof (commit): `git show --name-only --oneline 2ceb819` includes:
@@ -67,6 +87,10 @@
 ## 2026-02-16 11:49 America/Chicago
 - Pushed the queued `slm-workflow-only` commits to origin after fixing the safe push helper for non-interactive runs.
   - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/push_slm_workflow_only.ps1 -ConfirmPush` → `1a44ecd..d1d0e42  slm-workflow-only -> slm-workflow-only` + `PUSH_OK`
+
+## 2026-02-16 15:08 America/Chicago
+- Updated OpenClaw to beta via npm global install.
+  - Proof: `npm list -g openclaw --depth=0` → `openclaw@2026.2.15`
 
 ## 2026-02-16 11:20 America/Chicago
 - Captured a timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).

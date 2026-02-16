@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SLM smoke-summary",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "ok",
+    "input",
+    "outDir",
+    "report",
+    "preset",
+    "noExport",
+    "saveBlend",
+    "artifacts",
+    "metrics"
+  ],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "input": { "type": "string" },
+    "outDir": { "type": "string" },
+    "report": { "type": "string" },
+    "preset": { "type": "string" },
+    "noExport": { "type": "boolean" },
+    "saveBlend": { "type": "boolean" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["dae", "blend"],
+      "properties": {
+        "dae": { "type": ["string", "null"] },
+        "blend": { "type": ["string", "null"] }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["export_collada_dae", "export_collada_dae_bytes"],
+      "properties": {
+        "export_collada_dae": { "type": ["string", "null"] },
+        "export_collada_dae_bytes": { "type": ["integer", "null"] }
+      }
+    }
+  }
+}

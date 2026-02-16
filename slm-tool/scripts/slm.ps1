@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','smoke-summary','export-smoke','preflight','find-blender','check-collada')]
+  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','find-blender','check-collada')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -25,7 +25,8 @@ param(
   [switch]$SummaryOnly,
 
   # smoke-summary only
-  [string]$OutPath
+  [string]$OutPath,
+  [switch]$Schema
 )
 
 $ErrorActionPreference = 'Stop'
@@ -81,18 +82,24 @@ switch ($Command) {
   }
   'smoke-summary' {
     # Runs the smoke pipeline in SummaryOnly mode and validates the JSON schema.
+    # If -Schema is passed, prints the schema path and exits 0 without needing Blender.
     $p = if ($Preset) { $Preset } else { 'prop' }
 
     $args = @{
       Preset = $p
       Quiet  = $true
     }
+    if ($Schema)    { $args.Schema    = $true }
     if ($BlenderExe) { $args.BlenderExe = $BlenderExe }
     if ($InputPath)  { $args.InputPath  = $InputPath }
     if ($OutDir)     { $args.OutDir     = $OutDir }
     if ($OutPath)    { $args.OutPath    = $OutPath }
 
     & (Join-Path $here 'run_smoke_summary.ps1') @args
+  }
+  'smoke-summary-schema' {
+    # Convenience alias for: slm smoke-summary -Schema
+    & (Join-Path $here 'slm.ps1') smoke-summary -Schema
   }
   'export-smoke' {
     # If user asks for PrintOnly/SummaryOnly (or overrides like -OutDir), run the underlying smoke runner

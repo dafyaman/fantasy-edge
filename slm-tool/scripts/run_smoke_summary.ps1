@@ -5,7 +5,10 @@ param(
   [string]$OutDir,
   # Optional: write the single-line JSON summary to a deterministic file path.
   [string]$OutPath,
-  [switch]$Quiet
+  [switch]$Quiet,
+
+  # If set, print the path to the JSON Schema describing the smoke-summary output and exit 0.
+  [switch]$Schema
 )
 
 function Resolve-BlenderExe {
@@ -32,6 +35,13 @@ function Resolve-BlenderExe {
 }
 
 $ErrorActionPreference = 'Stop'
+
+if ($Schema) {
+  $schemaPath = Join-Path $PSScriptRoot 'smoke_summary.schema.json'
+  if (-not (Test-Path $schemaPath)) { throw "Missing schema file: $schemaPath" }
+  (Resolve-Path $schemaPath).Path
+  exit 0
+}
 
 $smoke = Join-Path $PSScriptRoot 'run_blender_pipeline_smoke.ps1'
 if (-not (Test-Path $smoke)) { throw "Missing smoke runner: $smoke" }

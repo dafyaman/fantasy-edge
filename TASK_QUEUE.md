@@ -4,7 +4,13 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 ## Active / Next
 
-- **[DONE]** Re-ran Blender-free preflight locally to confirm wiring still passes: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1` → `[check_preflight] OK`.
+- **[DONE]** Added a Windows `cmd.exe` convenience wrapper so `slm` commands can be run without typing `pwsh -File ...`.
+  - File: `slm-tool/scripts/slm.cmd`
+  - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → prints full path to `smoke_summary.schema.json`.
+
+- **NEXT** Commit the wrapper (and ensure there are **no unintended diffs** beyond the wrapper + tracking docs) before pushing anything.
+
+- **[DONE]** Re-ran Blender-free preflight locally to confirm wiring still passes: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1` → `[check_preflight] OK`. 
 
 - **[DONE]** Added `slm-tool/scripts/run_smoke_summary.ps1` helper that runs the smoke pipeline in `-SummaryOnly` mode and validates the JSON schema (stable keys for downstream tooling).
 
@@ -28,6 +34,14 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 - **[DONE]** Committed the smoke-summary CI artifact upload steps + `slm smoke-summary` CLI wiring on `slm-workflow-only` (commit `2ceb819`).
 
 - **NEXT** If you want this live in GitHub Actions: reply with **"OK to push 2ceb819"** and I’ll push `slm-workflow-only` to `origin`.
+
+- **[DONE]** Added a JSON Schema file for the `slm smoke-summary` output so downstream tooling has an explicit contract.
+  - File: `slm-tool/scripts/smoke_summary.schema.json`
+
+- **[DONE]** Added a `-Schema` mode so consumers can discover the schema path programmatically (does not require Blender).
+  - Proof: `pwsh -File slm-tool/scripts/slm.ps1 smoke-summary -Schema` prints the full path to `smoke_summary.schema.json`.
+
+- **[DONE]** Exposed schema discovery as a separate CLI command: `slm smoke-summary-schema` (alias for `slm smoke-summary -Schema`).
 
 - **[DONE]** Added a lightweight GitHub Actions job that runs `slm-tool/scripts/check_preflight.ps1` (Blender-free) on PRs, in addition to the export-smoke job.
 - **[DONE]** Wired repo-root `package.json` script `slm:preflight` to run the Blender-free preflight checks locally/CI via a single command (`npm run slm:preflight`).

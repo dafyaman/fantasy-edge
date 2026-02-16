@@ -20,9 +20,14 @@ $ErrorActionPreference = 'Stop'
 
 function Info($msg) { Write-Host "[push_slm_workflow_only] $msg" }
 
-# Resolve repo root from this script location
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RepoRoot = Resolve-Path (Join-Path $ScriptDir '..\..')
+# Resolve repo root from this script location.
+# $MyInvocation can be null-ish in some non-interactive contexts; prefer $PSCommandPath when available.
+$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
+if ([string]::IsNullOrWhiteSpace($scriptPath)) {
+  throw "Unable to determine script path (PSCommandPath/MyInvocation empty)."
+}
+$ScriptDir = Split-Path -Parent $scriptPath
+$RepoRoot = (Resolve-Path (Join-Path $ScriptDir '..\..')).Path
 
 Push-Location $RepoRoot
 try {

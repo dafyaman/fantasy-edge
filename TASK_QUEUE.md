@@ -1,12 +1,13 @@
 # SLM-001 — Task Queue
 
-Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified; progress log normalized to UTF-8 for clean diffs**
+Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight guards against missing Blender downloader script; repo-root npm script `slm:preflight` wired + verified; progress log normalized to UTF-8 for clean diffs; portable Blender layout notes (extracted vs direct unzip) captured in README**
 
 ## Active / Next
 
 - **[DONE]** Added a lightweight GitHub Actions job that runs `slm-tool/scripts/check_preflight.ps1` (Blender-free) on PRs, in addition to the export-smoke job.
 - **[DONE]** Wired repo-root `package.json` script `slm:preflight` to run the Blender-free preflight checks locally/CI via a single command (`npm run slm:preflight`).
 - **[DONE]** Documented the CI check names + how to mark the preflight check as required (see `slm-tool/README_PIPELINE.md`).
+- **[DONE]** Documented the **portable Blender layout options** (extracted vs direct unzip) and why CI prefers the extracted exe (see `slm-tool/README_PIPELINE.md`).
 
 - **[DONE]** Hardened `.github/workflows/slm_preflight.yml` to invoke preflight via `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ...` for consistent CI behavior.
 
@@ -36,11 +37,10 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- The portable Blender layout compat fix is now committed locally.
 - `slm-workflow-only` is currently **ahead by 3 commits** awaiting push:
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
-  - tracking/docs update commit (TASK_QUEUE + PROGRESS_LOG)
+  - `e71c91a` (update tracking for pending wrapper push)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
 
 Review aid:

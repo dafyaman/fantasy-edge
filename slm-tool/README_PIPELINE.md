@@ -60,3 +60,6 @@ If you want to make the preflight check required on `main`, set the required sta
 
 - The default input fixture is `slm-tool/fixtures/cube.obj`.
 - If Blender isn’t found, the smoke script prints the locations it checked and a winget install hint.
+- **Portable Blender layout:** the CI wrappers can use either of these:
+  - `tools/blender/<ver>/extracted/blender-<ver>-windows-x64/blender.exe` (preferred; avoids Windows "side-by-side configuration is incorrect" issues that can happen when running a copied `blender.exe` without adjacent DLLs)
+  - `tools/blender/<ver>/blender-<ver>-windows-x64/blender.exe` (works for the current local unzip layout)

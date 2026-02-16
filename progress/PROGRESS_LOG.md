@@ -532,3 +532,8 @@
 ## 2026-02-15 14:20 America/Chicago
 - CI: Guarded the Build slm-tool-app.exe step in .github/workflows/slm_ps_exec_smoke.yml behind a hashFiles(Cargo.toml) presence check to avoid missing-path failures.
   - Proof: see git diff for .github/workflows/slm_ps_exec_smoke.yml.
+ 
+ # #   2 0 2 6 - 0 2 - 1 5   2 1 : 5 7   A m e r i c a / C h i c a g o  
+ -   D o c u m e n t e d   p o r t a b l e   B l e n d e r   l a y o u t   c o m p a t i b i l i t y   ( " e x t r a c t e d "   v s   d i r e c t   u n z i p )   i n   ` s l m - t o o l / R E A D M E _ P I P E L I N E . m d `   s o   C I / d e b u g g i n g   h a s   a   s i n g l e   r e f e r e n c e   p o i n t .  
+     -   P r o o f :   ` g i t   d i f f   - -   s l m - t o o l / R E A D M E _ P I P E L I N E . m d `  
+ 

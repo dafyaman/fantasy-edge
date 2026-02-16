@@ -4,6 +4,10 @@
   - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
   - Proof (artifact): `progress/pending_push_status_2026-02-16_113720.json`
 
+## 2026-02-16 11:49 America/Chicago
+- Pushed the queued `slm-workflow-only` commits to origin after fixing the safe push helper for non-interactive runs.
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/push_slm_workflow_only.ps1 -ConfirmPush` → `1a44ecd..d1d0e42  slm-workflow-only -> slm-workflow-only` + `PUSH_OK`
+
 ## 2026-02-16 11:20 America/Chicago
 - Captured a timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
   - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`

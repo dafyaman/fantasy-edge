@@ -25,7 +25,9 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; preflight gua
 - **[DONE]** Pushed the committed workflow-guard fix (`1a44ecd`) to `origin/slm-workflow-only`.
   - Proof: `git push origin slm-workflow-only` → `380f5b1..1a44ecd  slm-workflow-only -> slm-workflow-only`
 
-NEXT: Decide how to incorporate the **portable Blender layout compatibility fix** into the pending CI push.
+NEXT: (after approval) push the 5 queued `slm-workflow-only` commits so CI picks up the portable Blender layout compatibility fix.
+
+(Internal note: `progress/PROGRESS_LOG.md` had embedded NUL bytes again; added `progress/fix_progress_log_encoding.ps1` to strip/normalize when it happens — now committed locally on `slm-workflow-only`.)
 
 Context:
 - Pending commit `7334753` makes CI wrappers prefer `tools\\blender\\4.2.14\\extracted\\...\\blender.exe` first (avoids Windows `side-by-side configuration is incorrect`).
@@ -37,11 +39,13 @@ Proof (local runs):
 - `pwsh -File slm-tool/scripts/check_ps_exec_export_smoke.ps1` → exports `slm-tool/_runs/export-smoke-20260215-201959/model.dae` (2642 bytes) and reports `[check_ps_exec_export_smoke] OK`.
 
 **UNBLOCK NEEDED (one-time OK to push):**
-- `slm-workflow-only` is currently **ahead by 4 commits** awaiting push:
+- `slm-workflow-only` is currently **ahead by 6 commits** awaiting push:
   - `7334753` (prefer extracted portable Blender in CI wrappers)
   - `3db862b` (support both portable Blender layouts in CI wrappers)
   - `e71c91a` (update tracking for pending wrapper push)
   - `34380f7` (document portable Blender layout in README)
+  - `511eba6` (track progress log encoding fixer + harden push helper)
+  - `116f8cf` (add pending-wrapper review helper)
 - Reply **"OK push SLM wrappers"** and I will push these commits to `origin/slm-workflow-only`.
 
 Review aids:
@@ -49,6 +53,7 @@ Review aids:
 - Worktree patch (compat fix only): `progress/pending_push_blender_layout_compat_worktree.patch`
 
 - **[DONE]** Hardened the safe push helper (`slm-tool/scripts/push_slm_workflow_only.ps1`) to refuse pushing when the working tree is dirty (unless explicitly overridden with `-AllowDirty`).
+  - Proof: `pwsh -File slm-tool/scripts/push_slm_workflow_only.ps1` now fails with `Refusing to push: working tree is dirty...` when `git status` is not clean.
 
 **[PARTIAL]** Pushed the portable Blender downloader fix to `origin/slm-workflow-only` (head=`380f5b1`).
 - Proof: `git push origin slm-workflow-only` → `57d5381..380f5b1  slm-workflow-only -> slm-workflow-only`

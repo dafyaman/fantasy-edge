@@ -1,4 +1,27 @@
 # SLM-001 — Progress Log
+## 2026-02-15 23:53 America/Chicago
+- Committed the local safety/maintenance changes so they can be pushed with the rest of `slm-workflow-only` once approved:
+  - Track `progress/fix_progress_log_encoding.ps1` (NUL-strip + UTF-8 rewrite)
+  - Keep `slm-tool/scripts/push_slm_workflow_only.ps1` dirty-worktree refusal (override via `-AllowDirty`)
+  - Updated tracking docs (`TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`)
+  - Proof (commit): see `git show -1 --name-only --oneline` output in this tick.
+
+## 2026-02-15 23:37 America/Chicago
+- Hardened `slm-tool/scripts/push_slm_workflow_only.ps1` so it refuses to push when the working tree is dirty unless `-AllowDirty` is passed.
+  - Proof (run): `pwsh -NoProfile -File slm-tool/scripts/push_slm_workflow_only.ps1` → prints `git status -sb` then throws `Refusing to push: working tree is dirty...`.
+
+## 2026-02-15 23:20 America/Chicago
+- Fixed recurring `PROGRESS_LOG.md` corruption by adding a tiny helper script that strips embedded NUL bytes and rewrites the file as UTF-8 (no BOM).
+  - File: `progress/fix_progress_log_encoding.ps1`
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File progress/fix_progress_log_encoding.ps1` → `RemovedNUL=254` and `WroteUTF8NoBOM=...\\progress\\PROGRESS_LOG.md`
+
+## 2026-02-15 23:04 America/Chicago
+- Re-checked the exact set of commits pending push to `origin/slm-workflow-only` using the read-only helper (no push performed).
+  - Proof (run): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/review_pending_wrapper_push.ps1` →
+    - `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 5]`
+    - `COMMITS_AHEAD_OF_ORIGIN:` `116f8cf`, `34380f7`, `e71c91a`, `3db862b`, `7334753`
+- Updated `TASK_QUEUE.md` to reflect the new `ahead 5` count and include commit `116f8cf` in the unblock list.
+
 ## 2026-02-15 22:48 America/Chicago
 - Added a tiny **read-only** helper script to summarize pending wrapper commits/files before approving a push.
   - File: `slm-tool/scripts/review_pending_wrapper_push.ps1`
@@ -538,11 +561,10 @@
 - CI: Guarded the Build slm-tool-app.exe step in .github/workflows/slm_ps_exec_smoke.yml behind a hashFiles(Cargo.toml) presence check to avoid missing-path failures.
   - Proof: see git diff for .github/workflows/slm_ps_exec_smoke.yml.
 
- 
- # #   2 0 2 6 - 0 2 - 1 5   2 1 : 5 7   A m e r i c a / C h i c a g o 
- 
- -   D o c u m e n t e d   p o r t a b l e   B l e n d e r   l a y o u t   c o m p a t i b i l i t y   ( " e x t r a c t e d "   v s   d i r e c t   u n z i p )   i n   ` s l m - t o o l / R E A D M E _ P I P E L I N E . m d `   s o   C I / d e b u g g i n g   h a s   a   s i n g l e   r e f e r e n c e   p o i n t . 
- 
-     -   P r o o f :   ` g i t   d i f f   - -   s l m - t o o l / R E A D M E _ P I P E L I N E . m d ` 
- 
- 
+
+## 2026-02-15 21:57 America/Chicago
+
+- Documented portable Blender layout compatibility ("extracted" vs direct unzip) in `slm-tool/README_PIPELINE.md` so CI/debugging has a single reference point.
+
+  - Proof: `git diff -- slm-tool/README_PIPELINE.md`
+

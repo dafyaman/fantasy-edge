@@ -3,6 +3,7 @@ SLM-001 helper: push the slm-workflow-only branch safely.
 
 Default behavior is DRY-RUN only.
 Use -ConfirmPush to perform the real push.
+Refuses to push if the working tree is dirty (pass -AllowDirty to override).
 
 Example:
   pwsh -NoProfile -File .\slm-tool\scripts\push_slm_workflow_only.ps1
@@ -11,7 +12,8 @@ Example:
 
 [CmdletBinding()]
 param(
-  [switch]$ConfirmPush
+  [switch]$ConfirmPush,
+  [switch]$AllowDirty
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,6 +36,11 @@ try {
 
   Info "git status -sb:"
   & git status -sb
+
+  $dirty = (& git status --porcelain).Trim()
+  if ($dirty -and (-not $AllowDirty)) {
+    throw "Refusing to push: working tree is dirty. Commit/stash changes or pass -AllowDirty."
+  }
 
   $remote = 'origin'
   $ref = 'slm-workflow-only'

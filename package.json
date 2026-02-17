@@ -19,6 +19,7 @@
     "slm:smoke-summary": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke-summary",
     "slm:smoke-summary-schema": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke-summary-schema",
     "slm:fixtures": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 fixtures",
+    "slm:validate-obj": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 validate-obj -InputPath ./slm-tool/fixtures/cube.obj",
 
     "electron:dev": "set NEXT_DEV_URL=http://localhost:3000&& electron .",
     "electron:build": "npm run build",

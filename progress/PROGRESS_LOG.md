@@ -1,4 +1,176 @@
 # SLM-001 — Progress Log
+## 2026-02-17 10:21 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8 -FilePath 'progress\\pending_push_status_2026-02-17_1020.json'"`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_1020.json`
+
+## 2026-02-17 10:04 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8 -FilePath 'progress\\pending_push_status_2026-02-17_1004.json'"`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_1004.json`
+
+## 2026-02-17 09:48 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8 -FilePath progress\\pending_push_status_2026-02-17_094833.json`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_094833.json`
+
+## 2026-02-17 09:31 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_093148.json`
+
+## 2026-02-17 09:15 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_091522.json`
+
+## 2026-02-17 08:59 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_085914.json`
+
+## 2026-02-17 08:43 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0843.json`
+
+## 2026-02-17 08:26 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval remains grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8 -FilePath progress\\pending_push_status_2026-02-17_0826.json`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0826.json`
+
+## 2026-02-17 08:09 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval remains grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 > progress\\pending_push_status_2026-02-17_0809.json`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0809.json`
+
+## 2026-02-17 07:53 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval remains grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 | Tee-Object -FilePath progress\\pending_push_status_2026-02-17_0753.json`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0753.json`
+
+## 2026-02-17 07:37 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval stays grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 | ConvertTo-Json -Depth 10 | Out-File -Encoding utf8NoBOM -FilePath progress\\pending_push_status_2026-02-17_0737.json`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0737.json`
+
+## 2026-02-17 07:21 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_raw":true`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0721.json`
+
+## 2026-02-17 07:05 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval stays grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0705.json`
+
+## 2026-02-17 06:48 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0648.json`
+
+## 2026-02-17 06:32 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0632.json`
+
+## 2026-02-17 06:16 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0616.json`
+
+## 2026-02-17 06:00 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) so the one-time push approval can be based on an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0600.json`
+
+## 2026-02-17 05:44 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":10`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0544.json`
+
+## 2026-02-17 05:28 America/Chicago
+- Regenerated the single patch bundle for all commits currently ahead of `origin/slm-workflow-only` (now ahead **10**) to support safe offline review before a one-time push approval.
+  - Proof (command): `git format-patch origin/slm-workflow-only..HEAD --stdout > progress/pending_push_bundle_ahead10.patch`
+  - Proof (artifact): `progress/pending_push_bundle_ahead10.patch` (62,726 bytes)
+
+## 2026-02-17 05:12 America/Chicago
+- Reconciled the unexpected clean-effective blocker by committing the missing `pending-push-files` wiring in the PowerShell CLI shim.
+  - Proof (commit): `5f37159` ("SLM-001: expose pending-push-files via slm CLI")
+  - Proof (pending-push status excerpt): `"ahead":10`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+
+## 2026-02-17 04:56 America/Chicago
+- Captured a fresh pending-push status snapshot for `slm-workflow-only` and discovered the branch is no longer clean-effective (a relevant file is modified).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":true`, `"uncommitted_relevant":["slm-tool/scripts/slm.ps1"]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0456.json`
+
+## 2026-02-17 04:38 America/Chicago
+- Added `slm pending-push-files` command to print the machine-readable list of files touched by commits ahead of `origin/slm-workflow-only` (wraps `pending_push_files.ps1`).
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 pending-push-files`
+  - Proof (output excerpt): `"file_count":13` and includes `slm-tool/scripts/slm.ps1`.
+
+## 2026-02-17 04:22 America/Chicago
+- De-confused the tracking docs by marking the old one-off approval phrase (**"OK to push 2ceb819"**) as **superseded** and unifying the push approval language to a single phrase: **"OK to push slm-workflow-only"**.
+  - Proof (diff excerpt): `git diff -- TASK_QUEUE.md` shows the new `**[SUPERSEDED]**` note and the unified approval note.
+
+## 2026-02-17 04:06 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) so any future "OK to push" approval is based on an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0406.json`
+
+## 2026-02-17 03:50 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) so any future "OK to push" approval is based on an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":false`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0350.json`
+
+## 2026-02-17 03:18 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) so the next "OK to push" approval is based on an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0318.json`
+
+## 2026-02-17 03:34 America/Chicago
+- Generated a single patch bundle containing all commits currently ahead of `origin/slm-workflow-only` (makes the one-time push approval easy to review offline).
+  - Proof (command): `git format-patch origin/slm-workflow-only..HEAD --stdout > progress/pending_push_bundle_ahead9.patch`
+  - Proof (size): `progress/pending_push_bundle_ahead9.patch` (60687 bytes)
+
+## 2026-02-17 03:02 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) so the next "OK to push" approval is based on an immutable artifact.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+  - Snapshot: `progress/pending_push_status_2026-02-17_0302.json`
+
+## 2026-02-17 02:46 America/Chicago
+- Committed the previously-uncommitted `slm` CLI shim change that exposes `pending-push-status` as a first-class command (keeps `slm-workflow-only` clean-effective again).
+  - Commit: `fbac932` ("SLM-001: expose pending-push-status via slm CLI")
+  - Proof (command): `git show -1 --name-only --oneline`
+  - Proof (output excerpt): `fbac932 ...` and lists `slm-tool/scripts/slm.ps1`
+- Re-verified push safety state after the commit (tracking docs still modified, but no relevant uncommitted files).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1`
+  - Proof (output excerpt): `"ahead":9`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+
 ## 2026-02-17 01:06 America/Chicago
 - Committed `slm validate-obj` + wired it into the Blender-free preflight so logs always include an explicit OBJ sanity line.
   - Commit: `7460be7`

@@ -1,4 +1,98 @@
 # SLM-001 — Progress Log
+## 2026-02-16 20:40 America/Chicago
+- Committing repo-root npm scripts for smoke-summary + tracking doc updates (cron tick).
+  - Proof (pre-commit): `git status -sb` showed `M TASK_QUEUE.md`, `M package.json`, `M progress/PROGRESS_LOG.md`.
+
+## 2026-02-16 20:23 America/Chicago
+- Added missing repo-root npm scripts for the smoke summary helpers so they’re runnable via `npm run` without remembering the `pwsh ... slm.ps1` invocation.
+  - Change: `package.json` (`slm:smoke-summary`, `slm:smoke-summary-schema`)
+  - Proof (command): `npm run -s slm:smoke-summary-schema`
+  - Proof (output): `C:\Users\newor\.openclaw\workspace\slm-tool\scripts\smoke_summary.schema.json`
+
+## 2026-02-16 20:08 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) to confirm the branch is still ahead by **2** commits and clean-effective.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; & .\\slm-tool\\scripts\\pending_push_status.ps1 | ConvertTo-Json -Depth 10"`
+  - Proof (output excerpt): `"ahead":2`, `"dirty_effective":false`, commits `0bf5833` + `e63077d`
+  - Snapshot: `progress/pending_push_status_2026-02-16_200800.json`
+
+## 2026-02-16 19:51 America/Chicago
+- Committed the repo-root `slm.cmd` wrapper so it’s no longer an untracked file (keeps `dirty_effective=false` while we only touch tracking docs).
+  - Commit: `0bf5833` ("SLM-001: add repo-root slm.cmd wrapper")
+  - Proof: `git show --name-only --oneline 0bf5833` → lists `slm.cmd`
+  - Proof (pending push state): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `ahead=2`, `dirty_effective=false`
+
+## 2026-02-16 19:35 America/Chicago
+- Added a repo-root `slm.cmd` convenience wrapper that delegates to `slm-tool/scripts/slm.cmd` (makes cmd.exe usage shorter).
+  - File: `slm.cmd`
+  - Proof (command): `cmd /c "cd /d C:\Users\newor\.openclaw\workspace && slm.cmd smoke-summary-schema"`
+  - Proof (output): `C:\Users\newor\.openclaw\workspace\slm-tool\scripts\smoke_summary.schema.json`
+
+## 2026-02-16 19:19 America/Chicago
+- Captured a fresh pending-push status snapshot (machine-readable JSON) for `slm-workflow-only` to confirm it’s still ahead by **1** commit and clean-effective (no push performed).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\pending_push_status.ps1 | Tee-Object -FilePath .\\progress\\pending_push_status_2026-02-16_191923.json`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_191923.json`
+  - Proof (output excerpt): `"ahead":1`, `"dirty_effective":false`, `"commits_ahead":[{"sha":"e63077d"...}]`
+
+## 2026-02-16 19:03 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) to confirm the branch is still ahead by exactly 1 commit.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; & .\\slm-tool\\scripts\\pending_push_status.ps1 | ConvertTo-Json -Depth 10 | Out-File -Encoding utf8 -FilePath 'progress\\pending_push_status_2026-02-17_1902.json'"`
+  - Proof (artifact): `progress/pending_push_status_2026-02-17_1902.json`
+  - Proof (output excerpt): `"ahead":1`, `"dirty_effective":false`, and `"commits_ahead":[{"sha":"e63077d"...}]`
+
+## 2026-02-16 18:47 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) to confirm the branch is still ahead by exactly 1 commit.
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool\\scripts\\pending_push_status.ps1 > progress\\pending_push_status_2026-02-16_184600.json"`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_184600.json`
+  - Proof (output excerpt): `"ahead":1`, `"dirty_effective":false`, `"sha":"e63077d"`
+
+## 2026-02-16 18:30 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed) to confirm the branch is still ahead by exactly 1 commit.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool\\scripts\\pending_push_status.ps1`
+  - Proof (output excerpt): `ahead=1`, `dirty_effective=false`, `sha=e63077d`.
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_183037.json`
+
+## 2026-02-16 18:13 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` using a PowerShell-safe invocation (no push performed).
+  - Proof (command): `Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; & .\\slm-tool\\scripts\\pending_push_status.ps1 | ConvertTo-Json -Depth 10 | Out-File -Encoding utf8 -FilePath 'progress\\pending_push_status_2026-02-16_1813.json'`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_1813.json`
+
+## 2026-02-16 17:56 America/Chicago
+- Captured a fresh, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool\\scripts\\pending_push_status.ps1 > progress\\pending_push_status_2026-02-16_1756.json"`
+  - Proof (artifact): `progress/pending_push_status_2026-02-16_1756.json`
+
+## 2026-02-16 17:40 America/Chicago
+- Generated a fresh human-readable “pending push review” artifact for the current `slm-workflow-only` queued commit (helps with one-time push approval).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/write_pending_push_review.ps1`
+  - Proof (artifact): `progress/pending_push_review_2026-02-16_1740.txt`
+
+## 2026-02-16 17:24 America/Chicago
+- Unblocked “clean working tree” checks while awaiting push approval by excluding the machine-generated `pending_push_files` snapshot JSON from git status (local-only, reversible).
+  - Change: appended `progress/pending_push_files_*.json` to `.git/info/exclude`.
+  - Proof (status now clean-effective):
+    - `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `"ahead":1`, `"dirty_effective":false`, `"uncommitted_relevant":[]`
+
+## 2026-02-16 17:07 America/Chicago
+- Captured a machine-readable snapshot of the exact files currently queued to push on `slm-workflow-only` (ahead by 1; no push performed).
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_files.ps1`
+  - Proof (output): `{ "file_count": 6, "files": ["TASK_QUEUE.md", "progress/PROGRESS_LOG.md", "slm-tool/scripts/run_smoke_summary.ps1", "slm-tool/scripts/slm.cmd", "slm-tool/scripts/slm.ps1", "slm-tool/scripts/smoke_summary.schema.json"] }`
+  - Snapshot: `progress/pending_push_files_2026-02-16_1707.json`
+
+## 2026-02-16 16:51 America/Chicago
+- Captured a fresh, timestamped pending-push status snapshot for `slm-workflow-only` (no push performed).
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `"ahead":1`, `"dirty_effective":false`, commit `e63077d`.
+  - Snapshot: `progress/pending_push_status_2026-02-16_165139.json`
+
+## 2026-02-16 16:35 America/Chicago
+- Captured a timestamped, machine-readable pending-push status snapshot for `slm-workflow-only` (no push performed).
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `"ahead":1`, `"dirty_effective":false`, commit `e63077d`.
+  - Snapshot: `progress/pending_push_status_2026-02-16_163543.json`
+
+## 2026-02-16 16:18 America/Chicago
+- Committed the Windows `cmd.exe` wrapper + `smoke-summary` schema discovery support (so consumers can locate the JSON Schema without Blender).
+  - Commit: `e63077d`
+  - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → `C:\Users\newor\.openclaw\workspace\slm-tool\scripts\smoke_summary.schema.json`
+
 ## 2026-02-16 16:02 America/Chicago
 - Added a Windows `cmd.exe` wrapper for the SLM CLI shim so you can run `slm-tool\scripts\slm.cmd <command>` from `cmd` without manually invoking PowerShell.
   - File: `slm-tool/scripts/slm.cmd`

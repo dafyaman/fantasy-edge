@@ -4,17 +4,31 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 ## Active / Next
 
+- **[DONE]** Added a repo-root `slm.cmd` wrapper so you can run `slm ...` from `cmd.exe` without a long path.
+  - File: `slm.cmd`
+  - Proof: `cmd /c "cd /d C:\Users\newor\.openclaw\workspace && slm.cmd smoke-summary-schema"` → prints `...\\slm-tool\\scripts\\smoke_summary.schema.json`.
+
 - **[DONE]** Added a Windows `cmd.exe` convenience wrapper so `slm` commands can be run without typing `pwsh -File ...`.
   - File: `slm-tool/scripts/slm.cmd`
   - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → prints full path to `smoke_summary.schema.json`.
 
-- **NEXT** Commit the wrapper (and ensure there are **no unintended diffs** beyond the wrapper + tracking docs) before pushing anything.
+- **[DONE]** Committed the Windows `cmd.exe` wrapper + smoke-summary schema discovery plumbing (and updated tracking docs).
+  - Commit: `e63077d`
+  - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → prints `...\slm-tool\scripts\smoke_summary.schema.json`.
+
+- **IN-PROGRESS** Commit the newly-added repo-root npm scripts for smoke-summary (`package.json`) + tracking doc updates.
+  - Proof of current uncommitted files: `git status -sb` → `M TASK_QUEUE.md`, `M package.json`, `M progress/PROGRESS_LOG.md`.
+
+- **NEXT (needs one-time approval)** Reply **"OK to push slm.cmd wrappers"** and I’ll push `slm-workflow-only` to `origin` (2 commits): `0bf5833` + `e63077d`.
+  - Current status proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `ahead=2`, `dirty_effective=false`, `uncommitted_relevant=[]`.
+  - Latest generated-at (from the helper): `2026-02-16 20:08:00 -06:00`.
+  - Snapshot saved: `progress/pending_push_status_2026-02-16_200800.json`.
 
 - **[DONE]** Re-ran Blender-free preflight locally to confirm wiring still passes: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1` → `[check_preflight] OK`. 
 
 - **[DONE]** Added `slm-tool/scripts/run_smoke_summary.ps1` helper that runs the smoke pipeline in `-SummaryOnly` mode and validates the JSON schema (stable keys for downstream tooling).
 
-- **[DONE]** Wired `run_smoke_summary.ps1` into the CLI shim (`slm-tool/scripts/slm.ps1`) as `slm smoke-summary` and added a repo-root npm script (`slm:smoke-summary`).
+- **[DONE]** Wired `run_smoke_summary.ps1` into the CLI shim (`slm-tool/scripts/slm.ps1`) as `slm smoke-summary` and added repo-root npm scripts (`slm:smoke-summary`, `slm:smoke-summary-schema`).
 
 - **[DONE]** Added a short note to `slm-tool/README_PIPELINE.md` documenting `slm smoke-summary` + `npm run -s slm:smoke-summary` and what it outputs (single JSON line).
 

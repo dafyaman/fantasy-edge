@@ -16,6 +16,8 @@
     "slm:preflight": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/check_preflight.ps1",
     "slm:smoke": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke",
     "slm:export-smoke": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 export-smoke",
+    "slm:smoke-summary": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke-summary",
+    "slm:smoke-summary-schema": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 smoke-summary-schema",
 
     "electron:dev": "set NEXT_DEV_URL=http://localhost:3000&& electron .",
     "electron:build": "npm run build",

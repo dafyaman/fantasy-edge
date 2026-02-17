@@ -4,6 +4,9 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 ## Active / Next
 
+- **[DONE]** Established a `slm-tool/fixtures/` convention with a short README (keeps future smoke/validation tests repeatable).
+  - Files: `slm-tool/fixtures/README.md`, `slm-tool/fixtures/.gitkeep`
+
 - **[DONE]** Added a repo-root `slm.cmd` wrapper so you can run `slm ...` from `cmd.exe` without a long path.
   - File: `slm.cmd`
   - Proof: `cmd /c "cd /d C:\Users\newor\.openclaw\workspace && slm.cmd smoke-summary-schema"` → prints `...\\slm-tool\\scripts\\smoke_summary.schema.json`.
@@ -16,13 +19,12 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
   - Commit: `e63077d`
   - Proof: `cmd /c slm-tool\scripts\slm.cmd smoke-summary-schema` → prints `...\slm-tool\scripts\smoke_summary.schema.json`.
 
-- **IN-PROGRESS** Commit the newly-added repo-root npm scripts for smoke-summary (`package.json`) + tracking doc updates.
-  - Proof of current uncommitted files: `git status -sb` → `M TASK_QUEUE.md`, `M package.json`, `M progress/PROGRESS_LOG.md`.
+- **[DONE]** Committed the repo-root npm scripts for smoke-summary (`package.json`) + tracking doc updates.
+  - Commit: `1a3dac0`
+  - Proof: `git show --name-only --oneline 1a3dac0` → lists `package.json`, `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`.
 
-- **NEXT (needs one-time approval)** Reply **"OK to push slm.cmd wrappers"** and I’ll push `slm-workflow-only` to `origin` (2 commits): `0bf5833` + `e63077d`.
-  - Current status proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` → `ahead=2`, `dirty_effective=false`, `uncommitted_relevant=[]`.
-  - Latest generated-at (from the helper): `2026-02-16 20:08:00 -06:00`.
-  - Snapshot saved: `progress/pending_push_status_2026-02-16_200800.json`.
+- **NEXT (needs one-time approval)** Reply **"OK to push slm-workflow-only"** and I’ll push `slm-workflow-only` to `origin` (now 3 commits): `0bf5833` + `e63077d` + `1a3dac0`.
+  - After approval I’ll re-check: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` (must show `dirty_effective=false`) then run the safe push helper.
 
 - **[DONE]** Re-ran Blender-free preflight locally to confirm wiring still passes: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1` → `[check_preflight] OK`. 
 
@@ -48,6 +50,24 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 - **[DONE]** Committed the smoke-summary CI artifact upload steps + `slm smoke-summary` CLI wiring on `slm-workflow-only` (commit `2ceb819`).
 
 - **NEXT** If you want this live in GitHub Actions: reply with **"OK to push 2ceb819"** and I’ll push `slm-workflow-only` to `origin`.
+
+- **[DONE]** Added a `help` command to the PowerShell CLI shim so `slm.ps1 help` prints usage + command list.
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 help` → prints `Usage:` and the command list.
+
+- **[DONE]** Mirrored `help` behavior into the `cmd.exe` wrappers (`slm.cmd` + `slm-tool/scripts/slm.cmd`) so `slm help` works in cmd without knowing PowerShell.
+  - Proof: `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd help"` prints `Usage:` + `Commands:`.
+
+- **[DONE]** Verified the repo-root cmd wrapper prints help via `/?` (so `cmd.exe` users can discover commands without knowing `help`).
+  - Proof: `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd /?"` prints `Usage:` + `Commands:`.
+
+- **[DONE]** Verified the nested wrapper also supports `/?` (cmd.exe discoverability).
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm-tool\\scripts\\slm.cmd /?"`
+  - Proof (output excerpt): prints `Usage:` and `Commands:`.
+
+- **[DONE]** Added `/?` support to the **PowerShell** CLI shim too, so `pwsh ... slm.ps1 /?` prints help (matches cmd.exe convention).
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 /?` → prints `Usage:` + `Commands:`.
 
 - **[DONE]** Added a JSON Schema file for the `slm smoke-summary` output so downstream tooling has an explicit contract.
   - File: `slm-tool/scripts/smoke_summary.schema.json`

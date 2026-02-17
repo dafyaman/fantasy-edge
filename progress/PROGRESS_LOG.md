@@ -1,7 +1,43 @@
 # SLM-001 — Progress Log
+## 2026-02-16 22:19 America/Chicago
+- Established a `slm-tool/fixtures/` convention (README + .gitkeep) so upcoming smoke/validation tests have a stable place for tiny, versioned inputs.
+  - Proof (files): `slm-tool/fixtures/README.md`, `slm-tool/fixtures/.gitkeep`
+  - Proof (command): `dir slm-tool\fixtures`
+
+## 2026-02-16 22:01 America/Chicago
+- Added `/?` support to the **PowerShell** CLI shim as an alias for `help` (matches cmd.exe convention).
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 /?`
+  - Proof (output excerpt): prints `Usage:` + `Commands:`.
+
+## 2026-02-16 21:45 America/Chicago
+- Verified the **nested** `cmd.exe` wrapper also supports `/?` so help is discoverable even without knowing `help`.
+  - File: `slm-tool/scripts/slm.cmd`
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm-tool\\scripts\\slm.cmd /?"`
+  - Proof (output excerpt): prints `Usage:` and `Commands:`.
+
+## 2026-02-16 21:29 America/Chicago
+- Verified the repo-root `cmd.exe` wrapper also shows help with the conventional `/?` flag (better UX for cmd users).
+  - File: `slm.cmd`
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd /?"`
+  - Proof (output excerpt): includes `Usage:` and `Commands:`.
+
+## 2026-02-16 21:13 America/Chicago
+- Mirrored `help` behavior into the **cmd.exe wrappers** so `slm help` works without manually invoking PowerShell.
+  - Files: `slm.cmd`, `slm-tool/scripts/slm.cmd`
+  - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd help"`
+  - Proof (output excerpt): prints `Usage:` and `Commands:`.
+
+## 2026-02-16 20:57 America/Chicago
+- Added a `help` command to the PowerShell CLI shim so it’s self-discoverable (`slm.ps1 help` prints usage + command list).
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\slm-tool\scripts\slm.ps1 help`
+  - Proof (output excerpt): includes `Usage:` and `Commands:`.
+
 ## 2026-02-16 20:40 America/Chicago
-- Committing repo-root npm scripts for smoke-summary + tracking doc updates (cron tick).
-  - Proof (pre-commit): `git status -sb` showed `M TASK_QUEUE.md`, `M package.json`, `M progress/PROGRESS_LOG.md`.
+- Committed repo-root npm scripts for smoke-summary + tracking doc updates (cron tick).
+  - Commit: `1a3dac0`
+  - Proof: `git show --name-only --oneline 1a3dac0` → `TASK_QUEUE.md`, `package.json`, `progress/PROGRESS_LOG.md`.
 
 ## 2026-02-16 20:23 America/Chicago
 - Added missing repo-root npm scripts for the smoke summary helpers so they’re runnable via `npm run` without remembering the `pwsh ... slm.ps1` invocation.

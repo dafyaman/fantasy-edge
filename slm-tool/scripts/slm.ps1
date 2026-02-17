@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','validate-obj','find-blender','check-collada','help','/?')]
+  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','validate-obj','find-blender','check-collada','pending-push-status','help','/?')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -50,7 +50,8 @@ if ($Command -eq 'help' -or $Command -eq '/?') {
     '  fixtures              Print fixtures dir + list available tiny inputs',
     '  validate-obj          Blender-free OBJ sanity check (requires -InputPath)',
     '  find-blender          Locate Blender executable candidates',
-    '  check-collada         Check whether Blender has io_scene_dae (Collada) addon'
+    '  check-collada         Check whether Blender has io_scene_dae (Collada) addon',
+    '  pending-push-status   Print machine-readable git ahead/dirty summary for slm-workflow-only'
   ) | Write-Output
   exit 0
 }
@@ -158,6 +159,9 @@ switch ($Command) {
   }
   'check-collada' {
     & (Join-Path $here 'check_blender_collada.ps1')
+  }
+  'pending-push-status' {
+    & (Join-Path $here 'pending_push_status.ps1')
   }
   default {
     throw "Unknown command: $Command"

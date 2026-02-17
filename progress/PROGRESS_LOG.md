@@ -1,4 +1,19 @@
 # SLM-001 — Progress Log
+## 2026-02-16 23:07 America/Chicago
+- Committed the fixtures sanity check so Blender-free preflight fails fast if required tiny fixtures go missing.
+  - Commit: `c865828`
+  - Files: `slm-tool/scripts/check_fixtures.ps1`, `slm-tool/scripts/check_preflight.ps1`
+
+## 2026-02-16 22:52 America/Chicago
+- Added a small `check_fixtures.ps1` script and wired it into `check_preflight.ps1` so Blender-free preflight verifies required tiny fixtures exist (fast fail for CI/dev).
+  - Files: `slm-tool/scripts/check_fixtures.ps1`, `slm-tool/scripts/check_preflight.ps1`
+  - Proof (run excerpt): `[check_fixtures] OK: cube.obj bytes=323`
+
+## 2026-02-16 22:34 America/Chicago
+- Committed the new `slm-tool/fixtures/` convention (README + .gitkeep) so smoke/validation tests have a stable home for tiny versioned inputs.
+  - Commit: `4cce4bb`
+  - Proof: `git show --name-only --oneline 4cce4bb`
+
 ## 2026-02-16 22:19 America/Chicago
 - Established a `slm-tool/fixtures/` convention (README + .gitkeep) so upcoming smoke/validation tests have a stable place for tiny, versioned inputs.
   - Proof (files): `slm-tool/fixtures/README.md`, `slm-tool/fixtures/.gitkeep`

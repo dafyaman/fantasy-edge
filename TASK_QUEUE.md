@@ -6,6 +6,11 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 - **[DONE]** Established a `slm-tool/fixtures/` convention with a short README (keeps future smoke/validation tests repeatable).
   - Files: `slm-tool/fixtures/README.md`, `slm-tool/fixtures/.gitkeep`
+  - Commit: `4cce4bb`
+
+- **[DONE]** Added a fixtures sanity check to the Blender-free preflight so CI/dev fails fast if required tiny fixtures go missing.
+  - Files: `slm-tool/scripts/check_fixtures.ps1`, `slm-tool/scripts/check_preflight.ps1`
+  - Proof: `pwsh -File slm-tool/scripts/check_preflight.ps1` includes `[check_fixtures] OK: cube.obj bytes=323`
 
 - **[DONE]** Added a repo-root `slm.cmd` wrapper so you can run `slm ...` from `cmd.exe` without a long path.
   - File: `slm.cmd`
@@ -23,7 +28,7 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
   - Commit: `1a3dac0`
   - Proof: `git show --name-only --oneline 1a3dac0` → lists `package.json`, `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`.
 
-- **NEXT (needs one-time approval)** Reply **"OK to push slm-workflow-only"** and I’ll push `slm-workflow-only` to `origin` (now 3 commits): `0bf5833` + `e63077d` + `1a3dac0`.
+- **NEXT (needs one-time approval)** Reply **"OK to push slm-workflow-only"** and I’ll push `slm-workflow-only` to `origin` (now 5 commits): `c865828` + `4cce4bb` + `1a3dac0` + `0bf5833` + `e63077d`.
   - After approval I’ll re-check: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1` (must show `dirty_effective=false`) then run the safe push helper.
 
 - **[DONE]** Re-ran Blender-free preflight locally to confirm wiring still passes: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1` → `[check_preflight] OK`. 

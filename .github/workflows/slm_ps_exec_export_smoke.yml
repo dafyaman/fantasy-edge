@@ -70,10 +70,36 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path ./progress | Out-Null
           pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/slm.ps1 smoke-summary -OutPath ./progress/smoke_summary_ci.json
+
+      - name: Write deterministic run_summary JSON artifact (from latest report.json)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path ./progress | Out-Null
+
+          $report = Get-ChildItem -Path ./slm-tool/_runs -Recurse -Filter report.json -File |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+          if (-not $report) {
+            throw "No report.json found under slm-tool/_runs (cannot summarize-run)."
+          }
+
+          pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/slm.ps1 summarize-run -ReportPath $report.FullName |
+            Out-File -Encoding utf8NoBOM -FilePath ./progress/run_summary_ci.json
 
       - name: Upload smoke-summary artifact
         uses: actions/upload-artifact@v4
         with:
           name: slm-smoke-summary
           path: progress/smoke_summary_ci.json
+          if-no-files-found: error
+
+      - name: Upload run_summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slm-run-summary
+          path: progress/run_summary_ci.json
+          if-no-files-found: error

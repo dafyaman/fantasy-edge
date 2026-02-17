@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','validate-obj','find-blender','check-collada','pending-push-status','help','/?')]
+  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','validate-obj','find-blender','check-collada','pending-push-status','pending-push-files','help','/?')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -51,7 +51,8 @@ if ($Command -eq 'help' -or $Command -eq '/?') {
     '  validate-obj          Blender-free OBJ sanity check (requires -InputPath)',
     '  find-blender          Locate Blender executable candidates',
     '  check-collada         Check whether Blender has io_scene_dae (Collada) addon',
-    '  pending-push-status   Print machine-readable git ahead/dirty summary for slm-workflow-only'
+    '  pending-push-status   Print machine-readable git ahead/dirty summary for slm-workflow-only',
+    '  pending-push-files    Print machine-readable list of files in commits ahead of origin/slm-workflow-only'
   ) | Write-Output
   exit 0
 }
@@ -162,6 +163,9 @@ switch ($Command) {
   }
   'pending-push-status' {
     & (Join-Path $here 'pending_push_status.ps1')
+  }
+  'pending-push-files' {
+    & (Join-Path $here 'pending_push_files.ps1')
   }
   default {
     throw "Unknown command: $Command"

@@ -78,9 +78,16 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
   - Files: `package.json`, `slm-tool/scripts/slm.ps1` (plus tracking docs)
   - Proof: `git show -1 --name-only --oneline` (see progress log entry for commit id)
 
-- **NEXT** Pick one:
-  - Add a `slm validate-obj` command (Blender-free) that checks fixture OBJ(s) are parseable and contain at least one face (fast sanity for downstream tooling)
-  - OR wire `slm fixtures` into `check_preflight.ps1` output so CI logs always show what tiny inputs are available
+- **[DONE]** Added `slm validate-obj` command (Blender-free) that checks an OBJ contains at least one vertex + face (fast sanity for fixtures/downstream tooling).
+  - Files: `slm-tool/scripts/validate_obj.ps1`, `slm-tool/scripts/slm.ps1`
+  - Proof: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 validate-obj -InputPath .\slm-tool\fixtures\cube.obj` → `[validate_obj] OK: ... bytes=323 hasVertex=True hasFace=True`
+
+- **[DONE]** Wired `slm validate-obj` into `check_preflight.ps1` (validates `slm-tool/fixtures/cube.obj` by default) so CI/dev logs include a Blender-free OBJ sanity check.
+
+- **[DONE]** Committed `slm validate-obj` + preflight wiring on `slm-workflow-only` so CI/dev logs include an explicit `[validate_obj]` line.
+  - Commit: `7460be7`
+
+- **NEXT** If you want this on GitHub: reply **"OK to push slm-workflow-only"** and I’ll push the branch to `origin` (now includes commit `7460be7`).
 
 - **[DONE]** Verified the nested wrapper also supports `/?` (cmd.exe discoverability).
   - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm-tool\\scripts\\slm.cmd /?"`

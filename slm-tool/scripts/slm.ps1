@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','find-blender','check-collada','help','/?')]
+  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','validate-obj','find-blender','check-collada','help','/?')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -48,6 +48,7 @@ if ($Command -eq 'help' -or $Command -eq '/?') {
     '  smoke-summary-schema  Print path to smoke summary JSON schema',
     '  preflight             Blender-free checks (py_compile + PrintOnly regression + fixtures sanity)',
     '  fixtures              Print fixtures dir + list available tiny inputs',
+    '  validate-obj          Blender-free OBJ sanity check (requires -InputPath)',
     '  find-blender          Locate Blender executable candidates',
     '  check-collada         Check whether Blender has io_scene_dae (Collada) addon'
   ) | Write-Output
@@ -146,7 +147,13 @@ switch ($Command) {
     Write-Output $fixturesDir
     Get-ChildItem -Path $fixturesDir -File | Sort-Object Name | ForEach-Object { $_.Name } | Write-Output
   }
-  'find-blender' {
+  'validate-obj' {
+    if (-not $InputPath) {
+      throw "validate-obj requires -InputPath <path-to-obj>"
+    }
+    & (Join-Path $here 'validate_obj.ps1') -Path $InputPath
+  }
+  'find-blender' {  
     & (Join-Path $here 'find_blender.ps1')
   }
   'check-collada' {

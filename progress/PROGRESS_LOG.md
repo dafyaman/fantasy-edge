@@ -1,4 +1,22 @@
 # SLM-001 — Progress Log
+## 2026-02-17 01:06 America/Chicago
+- Committed `slm validate-obj` + wired it into the Blender-free preflight so logs always include an explicit OBJ sanity line.
+  - Commit: `7460be7`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1`
+  - Proof (output excerpt): `[validate_obj] OK: ...\\slm-tool\\fixtures\\cube.obj bytes=323 hasVertex=True hasFace=True`
+
+## 2026-02-17 00:31 America/Chicago
+- Added a Blender-free OBJ sanity checker and exposed it via the CLI shim as `slm validate-obj` (requires `-InputPath`).
+  - Files: `slm-tool/scripts/validate_obj.ps1`, `slm-tool/scripts/slm.ps1`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\Users\newor\.openclaw\workspace'; & .\\slm-tool\\scripts\\slm.ps1 validate-obj -InputPath .\\slm-tool\\fixtures\\cube.obj"`
+  - Proof (output): `[validate_obj] OK: C:\Users\newor\.openclaw\workspace\slm-tool\fixtures\cube.obj bytes=323 hasVertex=True hasFace=True`
+
+## 2026-02-17 00:49 America/Chicago
+- Wired the Blender-free OBJ validator into the Blender-free preflight so CI/dev gets an explicit OBJ sanity check.
+  - File: `slm-tool/scripts/check_preflight.ps1`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_preflight.ps1`
+  - Proof (output excerpt): `[validate_obj] OK: C:\Users\newor\.openclaw\workspace\slm-tool\fixtures\cube.obj bytes=323 hasVertex=True hasFace=True`
+
 ## 2026-02-17 00:14 America/Chicago
 - Committed the `slm fixtures` command + repo-root `slm:fixtures` npm script so fixtures discovery is versioned and repeatable.
   - Files: `slm-tool/scripts/slm.ps1`, `package.json`, `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`

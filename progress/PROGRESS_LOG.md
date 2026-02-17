@@ -1,4 +1,31 @@
 # SLM-001 — Progress Log
+## 2026-02-17 00:14 America/Chicago
+- Committed the `slm fixtures` command + repo-root `slm:fixtures` npm script so fixtures discovery is versioned and repeatable.
+  - Files: `slm-tool/scripts/slm.ps1`, `package.json`, `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`
+  - Proof (commit): `git show -1 --name-only --oneline`
+
+## 2026-02-16 23:58 America/Chicago
+- Added repo-root npm script `slm:fixtures` (thin wrapper over `slm fixtures`) for parity with the other `slm:*` scripts.
+  - File: `package.json`
+  - Proof: `npm run -s slm:fixtures` →
+    - `C:\Users\newor\.openclaw\workspace\slm-tool\fixtures`
+    - `.gitkeep`
+    - `cube.obj`
+    - `README.md`
+
+## 2026-02-16 23:41 America/Chicago
+- Added `slm fixtures` command to the PowerShell CLI shim to print the fixtures directory and list available tiny inputs.
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 fixtures` →
+    - `C:\Users\newor\.openclaw\workspace\slm-tool\fixtures`
+    - `.gitkeep`
+    - `cube.obj`
+    - `README.md`
+
+## 2026-02-16 23:24 America/Chicago
+- Restored/ensured `slm-tool/scripts/slm.ps1` supports `help` + `/?` (usage output via Write-Output so it’s capturable). 
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 help` prints `Usage:` + `Commands:`.
+
 ## 2026-02-16 23:07 America/Chicago
 - Committed the fixtures sanity check so Blender-free preflight fails fast if required tiny fixtures go missing.
   - Commit: `c865828`

@@ -11,7 +11,7 @@ Examples:
 [CmdletBinding(PositionalBinding=$true)]
 param(
   [Parameter(Position=0)]
-  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','find-blender','check-collada')]
+  [ValidateSet('run','smoke','smoke-summary','smoke-summary-schema','export-smoke','preflight','fixtures','find-blender','check-collada','help','/?')]
   [string]$Command = 'run',
 
   # Common passthrough args (forwarded when the target script supports them)
@@ -30,6 +30,29 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+if ($Command -eq 'help' -or $Command -eq '/?') {
+  @(
+    'SLM-001 CLI shim',
+    '',
+    'Usage:',
+    '  slm <command> [args]',
+    '  pwsh -NoProfile -File slm-tool/scripts/slm.ps1 <command> [args]',
+    '',
+    'Commands:',
+    '  help | /?             Show this help',
+    '  run                   Run pipeline (see run_blender_pipeline.ps1 params)',
+    '  smoke                 Run pipeline smoke (see run_blender_pipeline_smoke.ps1 params)',
+    '  export-smoke          Smoke run with export enabled (portable Blender 4.2.14 LTS wrapper)',
+    '  smoke-summary         Emit one-line JSON summary (Schema validation; supports -OutPath)',
+    '  smoke-summary-schema  Print path to smoke summary JSON schema',
+    '  preflight             Blender-free checks (py_compile + PrintOnly regression + fixtures sanity)',
+    '  fixtures              Print fixtures dir + list available tiny inputs',
+    '  find-blender          Locate Blender executable candidates',
+    '  check-collada         Check whether Blender has io_scene_dae (Collada) addon'
+  ) | Write-Output
+  exit 0
+}
 
 if ($PrintOnly) {
   Write-Host "[slm] PrintOnly requested" -ForegroundColor DarkGray
@@ -117,6 +140,11 @@ switch ($Command) {
   }
   'preflight' {
     & (Join-Path $here 'check_preflight.ps1')
+  }
+  'fixtures' {
+    $fixturesDir = (Resolve-Path (Join-Path $here '..\fixtures')).Path
+    Write-Output $fixturesDir
+    Get-ChildItem -Path $fixturesDir -File | Sort-Object Name | ForEach-Object { $_.Name } | Write-Output
   }
   'find-blender' {
     & (Join-Path $here 'find_blender.ps1')

@@ -56,15 +56,31 @@ Status: **CLI shim + runners working; PrintOnly passthrough fixed; Blender-free 
 
 - **NEXT** If you want this live in GitHub Actions: reply with **"OK to push 2ceb819"** and I’ll push `slm-workflow-only` to `origin`.
 
-- **[DONE]** Added a `help` command to the PowerShell CLI shim so `slm.ps1 help` prints usage + command list.
+- **[DONE]** Ensured the PowerShell CLI shim supports `help` and `/?` so usage is self-discoverable (this had regressed briefly).
   - File: `slm-tool/scripts/slm.ps1`
-  - Proof: `pwsh -NoProfile -File slm-tool/scripts/slm.ps1 help` → prints `Usage:` and the command list.
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 help` → prints `Usage:` + `Commands:`.
 
 - **[DONE]** Mirrored `help` behavior into the `cmd.exe` wrappers (`slm.cmd` + `slm-tool/scripts/slm.cmd`) so `slm help` works in cmd without knowing PowerShell.
   - Proof: `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd help"` prints `Usage:` + `Commands:`.
 
 - **[DONE]** Verified the repo-root cmd wrapper prints help via `/?` (so `cmd.exe` users can discover commands without knowing `help`).
   - Proof: `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm.cmd /?"` prints `Usage:` + `Commands:`.
+
+- **[DONE]** Added a small `slm fixtures` discovery command (prints fixtures dir + lists available tiny inputs) so downstream tooling/scripts don’t need to hardcode paths.
+  - File: `slm-tool/scripts/slm.ps1`
+  - Proof: `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/slm.ps1 fixtures` → prints `...\slm-tool\fixtures` + `.gitkeep`, `cube.obj`, `README.md`.
+
+- **[DONE]** Added a repo-root npm script `slm:fixtures` (thin wrapper over `slm fixtures`) for consistency with the other `slm:*` scripts.
+  - File: `package.json`
+  - Proof: `npm run -s slm:fixtures` prints the fixtures directory and lists `.gitkeep`, `cube.obj`, `README.md`.
+
+- **[DONE]** Committed the `slm:fixtures` npm script + `slm fixtures` CLI additions so they’re versioned alongside the other `slm:*` scripts.
+  - Files: `package.json`, `slm-tool/scripts/slm.ps1` (plus tracking docs)
+  - Proof: `git show -1 --name-only --oneline` (see progress log entry for commit id)
+
+- **NEXT** Pick one:
+  - Add a `slm validate-obj` command (Blender-free) that checks fixture OBJ(s) are parseable and contain at least one face (fast sanity for downstream tooling)
+  - OR wire `slm fixtures` into `check_preflight.ps1` output so CI logs always show what tiny inputs are available
 
 - **[DONE]** Verified the nested wrapper also supports `/?` (cmd.exe discoverability).
   - Proof (command): `cmd /c "cd /d C:\\Users\\newor\\.openclaw\\workspace && slm-tool\\scripts\\slm.cmd /?"`

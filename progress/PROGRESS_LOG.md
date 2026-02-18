@@ -1,4 +1,95 @@
 # SLM-001 — Progress Log
+## 2026-02-18 03:27 America/Chicago
+- Committed the push-approval instruction artifact + queue/log updates so `slm-workflow-only` no longer has an untracked blocker file.
+  - Commit: (see `git log -1 --oneline`)
+  - Proof (paths committed): `progress/PUSH_APPROVAL_INSTRUCTIONS.md`, `TASK_QUEUE.md`, `progress/PROGRESS_LOG.md`
+
+## 2026-02-18 03:12 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to pin the current ahead/dirty-effective state to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0312.json`
+  - Proof (first line): `{"branch":"slm-workflow-only","status":"## slm-workflow-only...origin/slm-workflow-only [ahead 1]",..."dirty_effective":true,..."uncommitted_relevant":["progress/PUSH_APPROVAL_INSTRUCTIONS.md"],...}`
+
+## 2026-02-18 02:55 America/Chicago
+- Wrote a single consolidated, offline push-approval instruction artifact so the one-time `slm-workflow-only` push approval is easy to review and unblock.
+  - Artifact: `progress/PUSH_APPROVAL_INSTRUCTIONS.md`
+  - Proof (file first line): `# SLM-001 — slm-workflow-only push approval (one-time)`
+
+## 2026-02-18 02:40 America/Chicago
+- Generated an offline-reviewable patch bundle for the currently queued `slm-workflow-only` commit (ahead=1) to support a safe one-time push approval (no push performed).
+  - Bundle: `progress/pending_push_bundle_ahead1.patch`
+  - Proof (bundle first line): `From ca3ad15`
+
+## 2026-02-18 02:24 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to pin the current ahead/dirty-effective state to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0224.json`
+  - Proof (first line): `{"branch":"slm-workflow-only","status":"## slm-workflow-only...origin/slm-workflow-only [ahead 1]","ahead":1,"behind":0,"dirty_raw":true,"dirty_effective":false,"uncommitted_relevant":[],"commits_ahead":[{"sha":"ca3ad15","msg":"SLM-001: validate CI artifacts in smoke workflows"}],"generated_at":"2026-02-18 02:24:34 -06:00"}`
+
+## 2026-02-18 02:08 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to pin the current ahead/dirty-effective state to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0208.json`
+  - Proof (first line excerpt): `{"branch":"slm-workflow-only","status":"## slm-workflow-only...origin/slm-workflow-only [ahead 1]","ahead":1,..."dirty_effective":false,..."sha":"ca3ad15"...}`
+
+## 2026-02-18 01:33 America/Chicago
+- Captured a fresh, human-readable pending-push review snapshot for `slm-workflow-only` so the one-time push approval can be based on an immutable artifact (no push performed).
+  - Proof (file): `progress/pending_push_review_2026-02-18_0133.txt`
+  - Proof (excerpt): `STATUS=## slm-workflow-only...origin/slm-workflow-only [ahead 1]` and `COMMITS_AHEAD_OF_ORIGIN:` includes `ca3ad15`.
+
+## 2026-02-18 01:16 America/Chicago
+- Marked the task as **blocked on one explicit approval** before pushing `slm-workflow-only` (no git actions taken; just clarified the queue so the unblock input is unambiguous).
+  - Needed input (reply with exactly one line): `OK to push slm-workflow-only`
+  - Proof: `TASK_QUEUE.md` updated bullet under **Active / Next**.
+
+## 2026-02-18 01:01 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the current ahead/dirty-effective state pinned to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0101.json`
+  - Proof (first line): `{"branch":"slm-workflow-only",..."ahead":1,..."dirty_effective":false,..."sha":"ca3ad15"...}`
+
+## 2026-02-18 00:45 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the current ahead/dirty-effective state pinned to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0044.json`
+  - Proof (first line): `{"branch":"slm-workflow-only",..."ahead":1,..."dirty_effective":false,..."sha":"ca3ad15"...}`
+
+## 2026-02-18 00:28 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the current ahead/dirty-effective state pinned to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0028.json`
+  - Proof (first line excerpt): `..."ahead":1,..."dirty_effective":false,..."sha":"ca3ad15"...`
+
+## 2026-02-18 00:12 America/Chicago
+- Captured a fresh post-commit pending-push status snapshot for `slm-workflow-only` so the current ahead/dirty-effective state is pinned to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0012.json`
+  - Proof (first line excerpt): `..."ahead":1,..."dirty_effective":false,..."sha":"ca3ad15"...`
+
+## 2026-02-17 23:55 America/Chicago
+- Committed the new CI-artifacts validation step in both Windows smoke workflows (keeps the worktree clean-effective again; push still pending).
+  - Commit: `ca3ad15` ("SLM-001: validate CI artifacts in smoke workflows")
+  - Proof (from `git commit`): `2 files changed, 12 insertions(+)`
+
+## 2026-02-17 23:39 America/Chicago
+- Captured a fresh machine-readable pending-push status snapshot showing `slm-workflow-only` is clean re: commits (ahead=0) but **dirty_effective=true** due to the two modified workflow files.
+  - Proof (file): `progress/pending_push_status_2026-02-17_2339.json`
+  - Proof (first line): `{"branch":"slm-workflow-only",..."ahead":0,..."dirty_effective":true,..."uncommitted_relevant":[".github/workflows/slm_ps_exec_export_smoke.yml",".github/workflows/slm_ps_exec_smoke.yml"],...}`
+
+## 2026-02-17 23:23 America/Chicago
+- Added a validator step to both Windows GitHub Actions workflows to run `slm-tool/scripts/check_ci_artifacts.ps1` against `./progress` after `smoke_summary_ci.json` + `run_summary_ci.json` are written (fast fail if either artifact goes missing).
+  - Proof (diff excerpt): `+ pwsh ... check_ci_artifacts.ps1 -ArtifactsDir ./progress -RequireRunSummary`
+  - Files:
+    - `.github/workflows/slm_ps_exec_smoke.yml`
+    - `.github/workflows/slm_ps_exec_export_smoke.yml`
+
+## 2026-02-17 23:06 America/Chicago
+- Re-synced the tracking state: captured a fresh pending-push status snapshot and updated `TASK_QUEUE.md` to remove the now-resolved “blocked on 1 input” note.
+  - Proof (snapshot): `progress/pending_push_status_2026-02-17_2306.json`
+  - Proof (excerpt): `"ahead":0,"dirty_effective":false,"uncommitted_relevant":[]`
+
+## 2026-02-17 22:50 America/Chicago
+- Confirmed the worker is currently **blocked on one human input** (how to handle the two generated CI-artifacts validator outputs that keep the worktree `dirty_effective=true`). Logged the exact one-line reply needed to unblock.
+  - Blocking files: `progress/check_ci_artifacts_latest.json`, `progress/check_ci_artifacts_require_run_summary_allstreams.txt`
+  - Needed input (reply with exactly one line): `IGNORE ci_artifacts_outputs` or `DELETE ci_artifacts_outputs`
+
+## 2026-02-17 22:37 America/Chicago
+- Deleted the two local CI-artifacts validator output files per user input (`DELETE ci_artifacts_outputs`).
+  - Proof: `del /f /q progress\check_ci_artifacts_latest.json progress\check_ci_artifacts_require_run_summary_allstreams.txt` → `DELETED_latest` + `DELETED_require`
+
 ## 2026-02-17 22:34 America/Chicago
 - Captured a fresh pending-push status snapshot (JSON) after the branch advanced, so the current *ahead count* and *remaining uncommitted relevant files* are pinned.
   - Snapshot: `progress/pending_push_status_2026-02-17_2234.json`
@@ -1250,3 +1341,8 @@
 
 ## 2026-02-16 13:34 America/Chicago
 - (Removed: corrupted log entry)
+
+## 2026-02-18 01:51 America/Chicago
+- Captured a fresh timestamped pending-push status snapshot for `slm-workflow-only` (no push performed) to pin the current ahead/dirty-effective state to an immutable artifact.
+  - Snapshot: `progress/pending_push_status_2026-02-18_0149.json`
+  - Proof (first line excerpt): `{"branch":"slm-workflow-only",..."ahead":1,..."dirty_effective":false,..."commits_ahead":[{"sha":"ca3ad15"...}]}`

@@ -90,6 +90,12 @@ jobs:
           pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/slm.ps1 summarize-run -ReportPath $report.FullName |
             Out-File -Encoding utf8NoBOM -FilePath ./progress/run_summary_ci.json
 
+      - name: Validate CI artifacts (smoke_summary + run_summary)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ./slm-tool/scripts/check_ci_artifacts.ps1 -ArtifactsDir ./progress -RequireRunSummary
+
       - name: Upload smoke-summary artifact
         uses: actions/upload-artifact@v4
         with:

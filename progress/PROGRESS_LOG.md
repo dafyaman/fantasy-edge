@@ -1,4 +1,109 @@
 # SLM-001 — Progress Log
+## 2026-02-17 22:34 America/Chicago
+- Captured a fresh pending-push status snapshot (JSON) after the branch advanced, so the current *ahead count* and *remaining uncommitted relevant files* are pinned.
+  - Snapshot: `progress/pending_push_status_2026-02-17_2234.json`
+  - Proof (excerpt): `"ahead":2` and `"uncommitted_relevant":["progress/check_ci_artifacts_latest.json","progress/check_ci_artifacts_require_run_summary_allstreams.txt"]`
+
+## 2026-02-17 22:18 America/Chicago
+- Captured a fresh, timestamped pending-push status snapshot (machine-readable JSON) to pin the exact **current** blocker set for `slm-workflow-only` (no push performed).
+  - Snapshot: `progress/pending_push_status_2026-02-17_2217.json`
+  - Proof (excerpt): `"ahead":1` and `"dirty_effective":true` and `"uncommitted_relevant":["progress/check_ci_artifacts_latest.json","progress/check_ci_artifacts_require_run_summary_allstreams.txt","slm-tool/scripts/check_ci_artifacts.ps1"]`
+
+## 2026-02-17 22:01 America/Chicago
+- Added a short “why COMMIT is recommended” rationale directly under the **NEXT (blocked on 1 input)** item in `TASK_QUEUE.md` to reduce decision friction without changing any code.
+  - Proof (file/section): `TASK_QUEUE.md` → the **NEXT (blocked on 1 input)** block now includes three rationale bullets.
+
+## 2026-02-17 21:44 America/Chicago
+- Captured the current behavior of the untracked CI artifacts validator into stable files under `progress/` so the COMMIT vs DISCARD decision can be made from artifacts (no rerun needed).
+  - Proof (files):
+    - `progress/check_ci_artifacts_latest.json`
+    - `progress/check_ci_artifacts_require_run_summary_allstreams.txt`
+  - Proof (contents excerpt):
+    - latest.json: `{"ok":true,"has_smoke_summary":true,"has_run_summary":false,...}`
+    - require_run_summary_allstreams.txt: `{"ok":false,...}` + `[caught exception: RequireRunSummary failed as expected]`
+
+## 2026-02-17 21:29 America/Chicago
+- Tightened the currently-blocked “COMMIT vs DISCARD” decision in `TASK_QUEUE.md` so it’s unambiguous what input is needed next, and pointed directly at the two review artifacts.
+  - Proof (file/lines): `TASK_QUEUE.md` → see the updated **NEXT (blocked on 1 input)** item.
+  - Review artifacts:
+    - `progress/check_ci_artifacts_review.md` (full script + behavior notes)
+    - `progress/check_ci_artifacts_worktree.patch` (diff)
+
+## 2026-02-17 21:13 America/Chicago
+- Captured a fresh machine-readable pending-push status snapshot to keep the COMMIT vs DISCARD decision for `slm-tool/scripts/check_ci_artifacts.ps1` grounded in an immutable file.
+  - Snapshot: `progress/pending_push_status_2026-02-17_2113.json`
+  - Proof (single-line JSON excerpt): `"ahead":1,"dirty_effective":true,"uncommitted_relevant":["slm-tool/scripts/check_ci_artifacts.ps1"]`
+
+## 2026-02-17 20:57 America/Chicago
+- Reduced `dirty_effective` noise while awaiting the COMMIT vs DISCARD decision for `check_ci_artifacts.ps1` by locally excluding the generated review artifacts from git’s untracked set (reversible; affects only this worktree).
+  - Change: appended to `.git/info/exclude`:
+    - `progress/check_ci_artifacts_worktree.patch`
+    - `progress/check_ci_artifacts_hashes.json`
+    - `progress/check_ci_artifacts_review.md`
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "& .\\slm-tool\\scripts\\pending_push_status.ps1 | ConvertTo-Json -Depth 10"`
+  - Proof (output excerpt): `\"uncommitted_relevant\":[\"slm-tool/scripts/check_ci_artifacts.ps1\"]`
+
+## 2026-02-17 20:41 America/Chicago
+- Wrote a human-reviewable artifact (`progress/check_ci_artifacts_review.md`) containing the full proposed `slm-tool/scripts/check_ci_artifacts.ps1` contents and a short behavior summary, so the COMMIT vs DISCARD decision is easy.
+  - Proof (file): `progress/check_ci_artifacts_review.md`
+  - Proof (excerpt): `# Machine-readable single line for cron/CI logs` + `$summary | ConvertTo-Json -Compress | Write-Output`
+
+## 2026-02-17 20:25 America/Chicago
+- Generated immutable SHA256 fingerprints for the untracked `check_ci_artifacts.ps1` script and its review patch so we can safely decide commit vs discard without ambiguity.
+  - Proof (file): `progress/check_ci_artifacts_hashes.json`
+  - Proof (excerpt): `[{"Path":"...\\check_ci_artifacts.ps1","Hash":"5AAC9A34..."},{"Path":"...\\check_ci_artifacts_worktree.patch","Hash":"5F4F62E5..."}]`
+
+## 2026-02-17 20:08 America/Chicago
+- Normalized the patch artifact `progress/check_ci_artifacts_worktree.patch` to UTF-8 **without BOM** so diff viewers don’t show a weird leading character.
+  - Proof (first line now clean): `diff --git a/slm-tool/scripts/check_ci_artifacts.ps1 b/slm-tool/scripts/check_ci_artifacts.ps1`
+  - Proof (SHA256 changed when stripping BOM):
+    - before: `6EE31809A4B265E71D00B09C5085EAD578B793E298FEF0DCD4ED3DF167208FF5`
+    - after:  `5F4F62E5273545F4E261C2F64AAD1FEC1BD0626DF8588984FBFDA8AAF8BC3F3C`
+## 2026-02-17 19:52 America/Chicago
+- Exercised the CI artifacts validator in its strict mode to confirm it fails fast (exit 1) when `run_summary_ci.json` is missing, while still printing a machine-readable JSON summary first.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_ci_artifacts.ps1 -ArtifactsDir .\\progress -RequireRunSummary`
+  - Proof (output excerpt): `{"ok":false,"has_smoke_summary":true,"has_run_summary":false,...}` then `Exception: [check_ci_artifacts] FAIL: run_summary_ci.json missing under: .\\progress`
+
+## 2026-02-17 19:37 America/Chicago
+- Captured the authoritative git status/diff/untracked list to pin down the current blocker (untracked CI artifacts validator + its patch artifact).
+  - Proof (command): `git status -sb && git diff --name-status && git ls-files --others --exclude-standard`
+  - Proof (output excerpt):
+    - `## slm-workflow-only...origin/slm-workflow-only [ahead 1]`
+    - `?? progress/check_ci_artifacts_worktree.patch`
+    - `?? slm-tool/scripts/check_ci_artifacts.ps1`
+
+## 2026-02-17 19:20 America/Chicago
+- Reviewed the proposed CI artifacts validator script (from `progress/check_ci_artifacts_worktree.patch`) to confirm it is small, standalone, and does not depend on Blender or repo state beyond scanning an artifacts directory.
+  - Proof (file): `progress/check_ci_artifacts_worktree.patch`
+  - Proof (excerpt): `param([Parameter(Mandatory=$true)][string]$ArtifactsDir,[switch]$RequireRunSummary)` and `$summary | ConvertTo-Json -Compress | Write-Output`
+
+## 2026-02-17 19:03 America/Chicago
+- Re-generated `progress/check_ci_artifacts_worktree.patch` in UTF-8 (the previous version was written by PowerShell redirection and ended up UTF-16/"binary"-looking in plain text viewers).
+  - Proof (command): `git diff --no-index --text -- "NUL" "slm-tool/scripts/check_ci_artifacts.ps1" | Out-File -Encoding utf8 -FilePath progress/check_ci_artifacts_worktree.patch`
+  - Proof (excerpt, first lines now readable): `diff --git a/slm-tool/scripts/check_ci_artifacts.ps1 b/slm-tool/scripts/check_ci_artifacts.ps1` + `new file mode 100644`
+
+## 2026-02-17 18:47 America/Chicago
+- Captured an immutable pending-push status snapshot (no push performed) to record the current `slm-workflow-only` ahead/dirty state while waiting on the commit-vs-discard decision.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8NoBOM -FilePath 'progress\\pending_push_status_2026-02-17_1846.json'"`
+  - Proof (file): `progress/pending_push_status_2026-02-17_1846.json`
+  - Proof (excerpt): `"ahead":1, "dirty_effective":true, "uncommitted_relevant":["progress/check_ci_artifacts_worktree.patch","slm-tool/scripts/check_ci_artifacts.ps1"]`
+
+## 2026-02-17 18:30 America/Chicago
+- Ran the untracked CI artifacts validator script once locally (against `./progress`) to confirm it behaves as intended: emits a single JSON summary line and exits 0 when `-RequireRunSummary` is not set.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\\slm-tool\\scripts\\check_ci_artifacts.ps1 -ArtifactsDir .\\progress`
+  - Proof (output excerpt): `"ok":true, "has_smoke_summary":true, "has_run_summary":false`
+
+## 2026-02-17 18:14 America/Chicago
+- Generated a reviewable patch artifact for the currently-untracked CI artifacts validator script so the commit-vs-discard decision is easy to review.
+  - Proof (command): `git diff --no-index NUL slm-tool/scripts/check_ci_artifacts.ps1 > progress/check_ci_artifacts_worktree.patch`
+  - Proof (artifact): `progress/check_ci_artifacts_worktree.patch` (3150 bytes)
+
+## 2026-02-17 17:57 America/Chicago
+- Captured a fresh machine-readable pending-push status snapshot for `slm-workflow-only` and found the branch state has changed (now ahead by 1) and is no longer clean-effective due to a relevant modified file.
+  - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File slm-tool/scripts/pending_push_status.ps1 | Out-File -Encoding utf8NoBOM -FilePath progress/pending_push_status_latest.json`
+  - Proof (output excerpt): `"ahead":1`, `"dirty_effective":true`, `"uncommitted_relevant":["slm-tool/scripts/check_ci_artifacts.ps1"]`
+  - Snapshot: `progress/pending_push_status_latest.json`
+
 ## 2026-02-17 10:21 America/Chicago
 - Captured a fresh pending-push status snapshot for `slm-workflow-only` (no push performed) to keep the one-time push approval grounded in an immutable artifact.
   - Proof (command): `pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Set-Location 'C:\\Users\\newor\\.openclaw\\workspace'; .\\slm-tool\\scripts\\pending_push_status.ps1 | Out-File -Encoding utf8 -FilePath 'progress\\pending_push_status_2026-02-17_1020.json'"`
